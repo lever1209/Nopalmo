@@ -7,7 +7,11 @@ public class Reactions {
 	private static HashMap<String, Long> reactionMap = new HashMap<String, Long>();
 	
 	public static void init() {
-		reactionMap.put("galaxyThumb", 801657838358495232L);
+		insert("galaxyThumb", 801657838358495232L);
+	}
+	
+	public static void insert(String input, long id) {
+		reactionMap.put(input, id);
 	}
 	
 	public static String getReaction(String id) {

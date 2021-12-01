@@ -1,14 +1,13 @@
 package pkg.deepCurse.nopalmo.command;
 
-import java.util.List;
-
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 
 public abstract class GuildCommand {
 
-	public abstract void run(List<String> args, GuildMessageReceivedEvent guildMessage, GuildCommandManager commandManager) throws Exception;
+	public abstract void run(CommandBlob blob, GuildMessageReceivedEvent guildMessage, GuildCommandManager commandManager) throws Exception;
 
 	public abstract String[] getCommandCalls();
 

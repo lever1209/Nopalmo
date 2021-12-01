@@ -6,14 +6,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.global.Reactions;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 
 public class GuildMessageReceivedListener extends ListenerAdapter {
-
-	public static GuildCommandManager m = new GuildCommandManager();
 	
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
@@ -36,9 +35,9 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 			}
 		}
 
-		if (messageRaw.contentEquals(Global.getPrefix() + Global.getPrefix())
+		if (messageRaw.contentEquals(Global.prefix + Global.prefix)
 				&& DatabaseTools.Tools.Developers.canPowerOffBot(event.getAuthor().getIdLong())) {
-			message.addReaction(Reactions.getReaction("galaxyThumb")).queue();
+			message.addReaction(Reactions.getReaction("galaxyThumb")).complete();
 			
 			System.out.println("Shutting down; id " + event.getAuthor().getIdLong() + " used");
 			
@@ -55,7 +54,7 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 		}
 		
 		if (!event.getAuthor().isBot()) {
-			m.startCommand(event);
+			Boot.guildCommandManager.startCommand(event);
 		}
 		
 	}

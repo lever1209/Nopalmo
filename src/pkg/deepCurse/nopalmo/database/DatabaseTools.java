@@ -11,20 +11,26 @@ import javax.annotation.Nonnull;
 
 import org.jetbrains.annotations.Nullable;
 
+import pkg.deepCurse.nopalmo.core.Boot;
+import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.simpleLoggingGarbage.core.Log;
 
 public class DatabaseTools {
 
-	private static Connection connection;
+	private static Connection connection = null;
 
-	public DatabaseTools(String password) {
+	public DatabaseTools(String password) throws SQLException {
 		connection = createConnection(password);
+		Global.updatePrefix();
 	}
 
-	public static Connection createConnection(String password) {
+	public static Connection createConnection(String password) throws SQLException {
+
+		String dbName = Boot.isProd ? "nopalmo" : "chaos";
+
 		String driver = "com.mysql.cj.jdbc.Driver";
-		String url = "jdbc:mysql://localhost/nopalmo";
-		String username = "u1d";
+		String url = "jdbc:mysql://localhost/" + dbName;
+		String username = "nopalmo";
 		try {
 			Class.forName(driver);
 		} catch (ClassNotFoundException e) {
@@ -35,14 +41,17 @@ public class DatabaseTools {
 			return DriverManager.getConnection(url, username, password);
 		} catch (SQLException e) {
 			sqlTranslate("Generate connection", e);
+			throw new SQLException(e);
 		}
-		return null;
 	}
 
 	private static void sqlTranslate(String action, int errorCode) {
 		switch (errorCode) {
 		case 1062:
-			System.err.println("Failed to execute; errorCode=1062; Duplicate ID; On action " + action);
+			System.err.println("Failed to execute; errorCode=" + errorCode + "; ER_DUP_ENTRY; On action " + action);
+			break;
+		case 1054:
+			System.err.println("Failed to execute; errorCode=" + errorCode + "; ER_BAD_FIELD_ERROR; On action " + action);
 			break;
 		default:
 			System.err.println("Failed to execute; errorCode=" + errorCode + "; Unknown code; On action " + action);
@@ -78,6 +87,8 @@ public class DatabaseTools {
 
 	public class Tools {
 
+		// these sub classes will represent tables and the methods therein will be for actions within said table
+		
 		public class Guild {
 
 			public class Prefix {
@@ -96,32 +107,19 @@ public class DatabaseTools {
 							// throw new SQLException(null, null, 33); // we need a real catcher here
 							System.err.println(
 									"Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
-							return null;
+							return createPrefix(guildID, Global.prefix);
 						}
-
 					} catch (SQLException e) {
 						sqlTranslate(query, e.getErrorCode());
-						// System.out.println("eeeeee");
 						return null;
-					} finally {
-						try {
-							if (rs != null)
-								rs.close();
-						} catch (Exception e) {
-						}
-
-						try {
-							if (st != null)
-								st.close();
-						} catch (Exception e) {
-						}
-
-						// try { if (conn != null) conn.close(); } catch (Exception e) {};
+					} finally { // @formatter:off
+						try {if (rs != null)rs.close();} catch (Exception e) {}
+						try {if (st != null)st.close();} catch (Exception e) {}
+						// @formatter:on
 					}
-					// return null;
 				}
 
-				public static void createPrefix(@Nonnull long guildID, @Nullable String prefix)
+				public static String createPrefix(@Nonnull long guildID, @Nullable String prefix)
 						throws IllegalArgumentException {
 
 					if (prefix == null || prefix.isEmpty()) {
@@ -142,27 +140,25 @@ public class DatabaseTools {
 						int[] updateCounts = pstmt.executeBatch();
 						checkUpdateCounts(pstmt, updateCounts);
 						pstmt.close();
-						connection.commit();
+						// connection.commit();
+						return prefix;
 					} catch (SQLException e) {
 						sqlTranslate(pstmt, e);
-
 						for (int i : new int[] { 1062 }) {
 							if (i == e.getErrorCode()) {
-								setPrefix(connection, guildID, prefix);
-								break;
+								return setPrefix(connection, guildID, prefix);
 							}
 						}
-
 						try {
 							connection.rollback();
 						} catch (Exception e2) {
 							e.printStackTrace();
 						}
-
+						return null;
 					}
 				}
 
-				public static void setPrefix(Connection conn, long guildID, String prefix)
+				public static String setPrefix(Connection conn, long guildID, String prefix)
 						throws IllegalArgumentException {
 
 					if (prefix.isEmpty()) {
@@ -183,6 +179,7 @@ public class DatabaseTools {
 						checkUpdateCounts(pstmt, updateCounts);
 						pstmt.close();
 						conn.commit();
+						return prefix;
 					} catch (SQLException e) {
 						sqlTranslate(pstmt, e);
 						try {
@@ -190,7 +187,7 @@ public class DatabaseTools {
 						} catch (Exception e2) {
 							e.printStackTrace();
 						}
-
+						return null;
 					}
 				}
 			}
@@ -239,27 +236,30 @@ public class DatabaseTools {
 		}
 
 		public class Global {
+			
+			public static String prefix = null;
 
-			public static String getPrefix() {
+			public static void updatePrefix() throws SQLException {
 				Statement st = null;
 				ResultSet rs = null;
 				String query = "select * from global where id = 'prefix'";
+				String msg = "Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query;
 				try {
 					st = connection.createStatement();
 					rs = st.executeQuery(query);
 					if (rs.next()) {
-						return rs.getString("val");
+						prefix = rs.getString("value");
 					} else {
 						// throw new SQLException(null, null, 33); // we need a real catcher here
-						System.err
-								.println("Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
-						return null;
+
+						System.err.println(msg);
+						throw new NullPointerException(msg);
 					}
 
 				} catch (SQLException e) {
 					sqlTranslate(query, e.getErrorCode());
 					// System.out.println("eeeeee");
-					return null;
+					throw new SQLException(e);
 				} finally {
 					try {
 						if (rs != null)
@@ -277,6 +277,7 @@ public class DatabaseTools {
 				}
 				// return null;
 			}
+
 		}
 
 //		public class Reaction { // started off as a good idea but it sucks
