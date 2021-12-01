@@ -1,5 +1,7 @@
 package pkg.deepCurse.simpleLoggingGarbage.core;
 
+import javax.security.auth.login.LoginException;
+
 /**
  * this class exists for the sole reason of im lazy, as far as i know, this is
  * really bad practice and i will replace it at some point, or at least upgrade
@@ -22,4 +24,6 @@ public class Log {
 		}
 	}
 	//@formatter:on
+	public static void crash(Exception e) {
+	}
 }
