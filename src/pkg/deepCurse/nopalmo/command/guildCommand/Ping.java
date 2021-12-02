@@ -18,7 +18,7 @@ public class Ping extends GuildCommand {
 
 		TextChannel channel = event.getChannel();
 
-		// channel.sendMessage("You are: " + blob.getUserID()).queue();
+		channel.sendMessage("You are: " + blob.getUserID()).queue();
 		
 		if (blob.getArgs().size() == 0) {
 			// new Main();
