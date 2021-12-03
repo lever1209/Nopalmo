@@ -1,4 +1,4 @@
-package pkg.deepCurse.nopalmo.command.guildCommand;
+package pkg.deepCurse.nopalmo.command.guildCommand.info;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
