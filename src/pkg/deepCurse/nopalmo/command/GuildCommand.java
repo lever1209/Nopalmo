@@ -36,5 +36,25 @@ public abstract class GuildCommand {
 	public enum HelpPage {
 		General, DEV, EGG, Moderation, Fun, Info
 	}
+
+	public String getHelp() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Permission getRequiredPermission() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getUsage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getTimeout() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 	
 }

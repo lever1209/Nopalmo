@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pkg.deepCurse.nopalmo.command.GuildCommand;
-import pkg.deepCurse.nopalmo.command.guildCommand.Ping;
+import pkg.deepCurse.nopalmo.command.guildCommand.info.Ping;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 
@@ -41,7 +41,7 @@ public class GuildCommandManager {
 		}
 	}
 
-	public Collection<GuildCommand> getguildCommandMap() {
+	public Collection<GuildCommand> getGuildCommands() {
 		return guildCommandMap.values();
 	}
 

@@ -36,7 +36,7 @@ public class UptimePing {
 
 			}
 
-			System.out.println("fix me");
+			// System.out.println("fix me"); // not sure why this is here
 
 			if (socketAddress.getAddress() == null) {
 				return -1;

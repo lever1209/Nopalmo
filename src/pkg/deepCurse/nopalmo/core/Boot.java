@@ -43,9 +43,9 @@ public class Boot {
 		Log.boot("Init reaction/emote list");
 		Reactions.init();
 		Log.boot("Initialized reaction/emote list. . .");
-		Log.boot("Init commands list");
+		Log.boot("Init guild commands list");
 		guildCommandManager.init();
-		Log.boot("Initialized commands list. . .");
+		Log.boot("Initialized guild commands list. . .");
 		
 		try {
 			bot = JDABuilder.createDefault(args[0]).setChunkingFilter(ChunkingFilter.NONE)
@@ -57,7 +57,9 @@ public class Boot {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
+		
+		bot.getPresence().setActivity(Activity.listening("Infected Mushroom"));
+		
 		long bootTime = System.currentTimeMillis() - preBootTime;
 		
 		System.out.println("Taken "+bootTime+"ms to boot");
