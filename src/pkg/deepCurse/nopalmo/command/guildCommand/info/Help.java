@@ -1,13 +1,16 @@
 package pkg.deepCurse.nopalmo.command.guildCommand.info;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import pkg.deepCurse.nopalmo.command.GuildCommand;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.global.Tools;
+import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 
@@ -20,45 +23,32 @@ public class Help extends GuildCommand {
 	}
 
 	@Override
-	public void run(GuildCommandBlob blob, GuildCommandManager commandManager) throws Exception {
-		// TextChannel channel = event.getChannel();
-		// Member user = event.getMember();
-		// if (Tools.devIdCheck(null, user.getId(), channel, null)) {
-		if (blob.getArgs().size() > 1) {
-			Tools.wrongUsage(blob.getGuildMessageEvent().getChannel(), this);
-			return;
-		}
-		if (blob.getArgs().isEmpty()) {
+	public void runCommand(GuildCommandBlob blob, GuildCommandManager commandManager,
+			HashMap<String, Argument> argumentMap) throws Exception {
+
+		if (argumentMap.isEmpty()) {
 			EmbedBuilder embed = new EmbedBuilder().setTitle("Commands:");
 
-			for (HelpPage i : HelpPage.values()) {
-				if (i != HelpPage.DEV) {
-					StringBuilder pageData = new StringBuilder();
+			HashMap<HelpPage, String> commandHash = new HashMap<HelpPage, String>();
 
-					for (GuildCommand command : manager.getGuildCommands()) {
-						if (!command.isHidden() & command.getHelpPage() != HelpPage.EGG) {
-							if (command.getHelpPage() == i) {
+			for (GuildCommand command : manager.getGuildCommands()) {
 
-								if (!pageData.toString().contains(command.getCommandName())) {
-									pageData.append("`" + command.getCommandName() + "`\n");
-								}
+				commandHash.put(command.getHelpPage(),
+						commandHash.get(command.getHelpPage()) + command.getCommandName());
 
-							}
-						}
-					}
-					if (!pageData.toString().isBlank()) {
-						embed.addField(i.name() + ": ", pageData.toString(), true);
-					}
-					// pageData.delete(0, pageData.length());
-				}
 			}
 
 			StringBuilder sB = new StringBuilder();
 
-			sB.append("`manual`\n");
-			sB.append("`ping`\n");
-			sB.append("`support`\n");
-			// sB.append("`"+Global.Prefix+"\n");
+			GuildCommand ping = commandManager.getCommand("ping");
+			if (ping != null) {
+				sB.append("`"+ping.getUsage()+"`\n");
+			}
+			
+			GuildCommand help = commandManager.getCommand("help");
+			if (help != null) {
+				sB.append("`"+help.getUsage()+"`\n");
+			}
 
 			embed.addField("Information:", "Commands to take note of:\n" + sB, false);
 
@@ -74,7 +64,7 @@ public class Help extends GuildCommand {
 			embed.setTimestamp(Instant.now());
 			embed.setColor(0);
 			if (embed.isValidLength()) {
-				blob.getGuildMessageEvent().getChannel().sendMessage(embed.build()).queue();
+				blob.getGuildMessageEvent().getChannel().sendMessageEmbeds(embed.build()).queue();
 			} else {
 				blob.getGuildMessageEvent().getChannel()
 						.sendMessage(
@@ -88,6 +78,16 @@ public class Help extends GuildCommand {
 			}
 			return;
 		}
+
+		// ##########################################################################################################################
+
+		// ##########################################################################################################################
+
+		// ##########################################################################################################################
+
+		// ##########################################################################################################################
+
+		// ##########################################################################################################################
 		try {
 			GuildCommand command = manager.getCommand(String.join("", blob.getArgs()));
 
@@ -132,15 +132,17 @@ public class Help extends GuildCommand {
 				}
 				sB.append("Premium: " + command.isPremium() + "\n");
 				eB.addField("Misc", sB.toString(), false);
-				blob.getGuildMessageEvent().getChannel().sendMessage(eB.build()).queue();
+				blob.getGuildMessageEvent().getChannel().sendMessageEmbeds(eB.build()).queue();
 			} else {
 				throw new NullPointerException("Invalid input");
 			}
 
 		} catch (java.lang.NullPointerException e) {
 			e.printStackTrace();
-			blob.getGuildMessageEvent().getChannel().sendMessage("The command `" + String.join("", blob.getArgs()) + "` does not exist!\n" + "Use `"
-					+ Global.prefix + getCommandCalls()[0] + "` for a list of all my commands!").queue();
+			blob.getGuildMessageEvent().getChannel()
+					.sendMessage("The command `" + String.join("", blob.getArgs()) + "` does not exist!\n" + "Use `"
+							+ Global.prefix + getCommandCalls()[0] + "` for a list of all my commands!")
+					.queue();
 			return;
 
 		}
@@ -176,9 +178,4 @@ public class Help extends GuildCommand {
 		return Global.prefix + getCommandCalls()[0] + " [Command name]";
 	}
 
-	@Override
-	public int getTimeout() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

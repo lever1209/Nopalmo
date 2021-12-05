@@ -33,24 +33,28 @@ public abstract class CommandBlob {
 		return this.modifiedRaw;
 	}
 	
+	@Deprecated
 	public ArrayList<String> getArgs() {
 		return args;
 	}
 
-	public void setUser(long userID) {
+	public CommandBlob setUser(long userID) {
 		this.userID = userID;
+		return this;
 	}
 	
 	public long getUserID() {
 		return this.userID;
 	}
 	
-	public void setJDA(JDA bot) {
+	public CommandBlob setJDA(JDA bot) {
+		return this;
 		
 	}
 	
-	public void setArgs(ArrayList<String> newArguments) {
+	public CommandBlob setArgs(ArrayList<String> newArguments) {
 		this.args = newArguments;
+		return this;
 	}
-	
+		
 }

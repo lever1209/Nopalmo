@@ -2,7 +2,6 @@ package pkg.deepCurse.nopalmo.manager;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,9 +13,11 @@ import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pkg.deepCurse.nopalmo.command.GuildCommand;
+import pkg.deepCurse.nopalmo.command.guildCommand.info.Help;
 import pkg.deepCurse.nopalmo.command.guildCommand.info.Ping;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
+import pkg.deepCurse.nopalmo.global.Tools;
 
 public class GuildCommandManager {
 
@@ -29,6 +30,7 @@ public class GuildCommandManager {
 	}
 
 	public void init() {
+		// addCommand(new Help(this)); FIXME
 		addCommand(new Ping());
 	}
 
@@ -67,14 +69,16 @@ public class GuildCommandManager {
 				long commandStartTime = System.currentTimeMillis();
 
 				try {
-					ArrayList<String> newArguments = new ArrayList<String>();
+					// ArrayList<String> newArguments = new ArrayList<String>();
 					// ArrayList<String> commandFlags = new ArrayList<String>();
-					// ArrayList<String[]> extractedFlags = new ArrayList<String[]>(); // not needed currently, remnant idea of bash-ish
 
 					GuildCommandBlob commandBlob = new GuildCommandBlob(guildMessage);
+					GuildCommand guildCommand = guildCommandMap.get(command);
+					HashMap<String, Argument> argumentList = new HashMap<String, Argument>();
 
 					boolean printTime = false;
 					byte argSkipCount = 0;
+					boolean remainsValid = true;
 
 					for (String x : args) {
 						switch (x) {
@@ -88,52 +92,83 @@ public class GuildCommandManager {
 						case "\\del":
 							guildMessage.getMessage().delete().queue();
 							break;
-						default:
-							if (argSkipCount<=0) {
-								newArguments.add(x);
+						default: // in the rewrite process
+							if (argSkipCount <= 0) {
+
+								if (guildCommand.getArguments() != null) {
+									if (x.startsWith(Argument.argumentPrefix)) {
+
+										String pre = x.substring(Argument.argumentPrefix.length());
+
+										argumentList.put(pre, guildCommand.getArguments().get(pre));
+
+									} else {
+										if (guildCommand.getArguments().get(x).getPrefixRequirement()) {
+											Tools.wrongUsage(guildMessage.getChannel(), guildCommand);
+											remainsValid = false;
+										} else {
+											argumentList.put(x, guildCommand.getArguments().get(x));
+										}
+									}
+								}
+//
+//								if (guildCommand.getArguments() != null) {
+//
+//									String newArg = x;
+//									
+//									if (!newArg.startsWith(Argument.argumentPrefix)) {
+//										if (guildCommand.getArguments().get(newArg)!=null) {
+//											
+//										}
+//									}
+//									
+//									if (guildCommand.getArguments().containsKey(newArg)) {
+//
+//										argumentList.put(guildCommand.getArguments().get(newArg).getArgName(),
+//												guildCommand.getArguments().get(newArg));
+//									} else
+//
+//										argumentList.put(newArg, new Argument(newArg));
+//								}
 							}
 						}
-
 					}
-					
-					commandBlob.setArgs(newArguments);
-					
-					guildCommandMap.get(command).run(commandBlob, this);
+
+					if (remainsValid) {
+						guildCommand.runCommand(commandBlob, this, argumentList);
+					}
 
 					if (printTime) {
 						guildMessage.getChannel()
-								.sendMessage("Time to run: " + (commandStartTime - System.currentTimeMillis()) + "ms")
+								.sendMessage("Time to run: " + (System.currentTimeMillis() - commandStartTime) + "ms")
 								.queue();
 					}
 
 				} catch (Exception e) {
 					if (Boot.isProd) {
-						guildMessage.getChannel().sendMessage("```\n" + e + "```").queue();
+						guildMessage.getChannel().sendMessage("```yaml\n" + e + "```").queue();
 					} else {
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						e.printStackTrace(pw);
-						guildMessage.getChannel().sendMessage("```\n" + sw.toString() + "```").queue();
+						guildMessage.getChannel().sendMessage("```yaml\n" + sw.toString() + "```").queue();
 						System.err.println("Exception caught in: " + e.toString());
 						e.printStackTrace();
 					}
 				} catch (Throwable t) {
 
 					if (Boot.isProd) {
-						guildMessage.getChannel().sendMessage("```\n" + t + "```").queue();
+						guildMessage.getChannel().sendMessage("```apache\n" + t + "```").queue();
 					} else {
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						t.printStackTrace(pw);
-						guildMessage.getChannel().sendMessage("```\n" + sw.toString() + "```").queue();
+						guildMessage.getChannel().sendMessage("```apache\n" + sw.toString() + "```").queue();
 						System.err.println("Error caught in: " + t.toString());
 						t.printStackTrace();
 					}
-
 				}
-
 			});
 		}
 	}
-
 }

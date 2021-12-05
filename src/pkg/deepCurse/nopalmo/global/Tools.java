@@ -6,7 +6,7 @@ import pkg.deepCurse.nopalmo.command.GuildCommand;
 public class Tools {
 
 	public static void wrongUsage(TextChannel tc, GuildCommand c) {
-		tc.sendMessage("Wrong Command Usage!\n" + c.getCommandName()).queue();
+		tc.sendMessage("Wrong Command Usage!\n" + c.getUsage()).queue();
 	}
 	
 }

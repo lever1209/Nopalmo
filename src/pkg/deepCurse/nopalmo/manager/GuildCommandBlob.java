@@ -3,8 +3,9 @@ package pkg.deepCurse.nopalmo.manager;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class GuildCommandBlob extends CommandBlob {
-
-	@SuppressWarnings("deprecation")
+	
+	String[][] argumentArray = null;
+	
 	public GuildCommandBlob(GuildMessageReceivedEvent event) {
 		super(event);
 		setUser(event.getMessage().getAuthor().getIdLong());

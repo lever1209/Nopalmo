@@ -1,7 +1,5 @@
 package pkg.deepCurse.simpleLoggingGarbage.core;
 
-import javax.security.auth.login.LoginException;
-
 import pkg.deepCurse.nopalmo.core.Boot;
 
 /**

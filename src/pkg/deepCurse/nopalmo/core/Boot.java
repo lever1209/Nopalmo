@@ -62,7 +62,7 @@ public class Boot {
 		
 		long bootTime = System.currentTimeMillis() - preBootTime;
 		
-		System.out.println("Taken "+bootTime+"ms to boot");
+		Log.boot("Taken "+bootTime+"ms to boot");
 		
 	}
 }
