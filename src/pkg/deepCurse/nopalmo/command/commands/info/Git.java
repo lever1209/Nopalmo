@@ -1,4 +1,4 @@
-package pkg.deepCurse.nopalmo.command.commands;
+package pkg.deepCurse.nopalmo.command.commands.info;
 
 import java.util.HashMap;
 

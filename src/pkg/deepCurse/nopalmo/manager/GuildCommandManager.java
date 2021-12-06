@@ -13,9 +13,10 @@ import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
-import pkg.deepCurse.nopalmo.command.commands.Git;
-import pkg.deepCurse.nopalmo.command.commands.Help;
-import pkg.deepCurse.nopalmo.command.commands.Ping;
+import pkg.deepCurse.nopalmo.command.commands.info.Git;
+import pkg.deepCurse.nopalmo.command.commands.info.Help;
+import pkg.deepCurse.nopalmo.command.commands.info.Ping;
+import pkg.deepCurse.nopalmo.command.commands.info.Prefix;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.global.Tools;
@@ -34,6 +35,7 @@ public class GuildCommandManager extends CommandManager {
 		addCommand(new Help(this));
 		addCommand(new Ping());
 		addCommand(new Git());
+		addCommand(new Prefix());
 	}
 
 	private void addCommand(GuildCommandInterface c) {
@@ -81,8 +83,10 @@ public class GuildCommandManager extends CommandManager {
 					boolean printTime = false;
 					byte argSkipCount = 0;
 					boolean remainsValid = true;
+					boolean isWildCard = false;
 
 					for (String x : args) {
+						boolean taken = false;
 						x = x.toLowerCase();
 						switch (x) {
 						case "\\time":
@@ -102,47 +106,33 @@ public class GuildCommandManager extends CommandManager {
 									if (x.startsWith(Argument.argumentPrefix)) {
 
 										String pre = x.substring(Argument.argumentPrefix.length());
-										
 										if (guildCommand.getArguments().keySet().contains(pre)) {
 											argumentList.put(pre, guildCommand.getArguments().get(pre));
+											taken = true;
 										} else {
 											Tools.wrongUsage(guildMessage.getChannel(), guildCommand);
 											remainsValid = false;
 										}
 									} else {
+										// if (!guildCommand.getArguments().get(x).getIsWildcard()) {
 										if (guildCommand.getArguments().get(x).getPrefixRequirement()) {
 											Tools.wrongUsage(guildMessage.getChannel(), guildCommand);
 											remainsValid = false;
 										} else {
 											argumentList.put(x, guildCommand.getArguments().get(x));
+											taken = true;
 										}
+										// } else {
+										// argumentList.put(x, guildCommand.getArguments().get(x));
+										// }
 									}
 								}
-//
-//								if (guildCommand.getArguments() != null) {
-//
-//									String newArg = x;
-//									
-//									if (!newArg.startsWith(Argument.argumentPrefix)) {
-//										if (guildCommand.getArguments().get(newArg)!=null) {
-//											
-//										}
-//									}
-//									
-//									if (guildCommand.getArguments().containsKey(newArg)) {
-//
-//										argumentList.put(guildCommand.getArguments().get(newArg).getArgName(),
-//												guildCommand.getArguments().get(newArg));
-//									} else
-//
-//										argumentList.put(newArg, new Argument(newArg));
-//								}
 							}
 						}
 					}
-					
+
 					commandBlob.setCommandManager(this);
-					
+
 					if (remainsValid) {
 						guildCommand.runGuildCommand(commandBlob, argumentList);
 					}

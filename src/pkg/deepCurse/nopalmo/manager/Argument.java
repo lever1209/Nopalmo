@@ -21,6 +21,8 @@ public class Argument {
 	private String argName = null;
 	private Argument[] subArgs = null;
 	private boolean requiresPrefix = false;
+	private Boolean isWildcard;
+	
 	public static final String argumentPrefix = "-"; // This exists for the sole reason of customization and will
 														// generally not change, ever, its recommended you keep it to
 														// something other than empty to help ensure that what the user
@@ -109,6 +111,15 @@ public class Argument {
 		this.requiresPrefix = bool;
 		return this;
 	}
+	
+	public Argument setIsWildcard(Boolean bool) {
+		this.isWildcard = bool;
+		return this;
+	}
+	
+	public Boolean getIsWildcard() {
+		return isWildcard;
+	}
 
 	public boolean getPrefixRequirement() {
 		return this.requiresPrefix;
@@ -116,7 +127,7 @@ public class Argument {
 
 	public interface RunnableArg {
 
-		public void run();
+		public void run(Argument[] argArray);
 
 	}
 

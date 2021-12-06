@@ -1,30 +1,18 @@
-package pkg.deepCurse.nopalmo.command.commands;
+package pkg.deepCurse.nopalmo.command.commands.info;
 
 import java.util.HashMap;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
-import pkg.deepCurse.nopalmo.command.CommandInterface.DirectCommandInterface;
-import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
+import pkg.deepCurse.nopalmo.command.CommandInterface.DualCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
-import pkg.deepCurse.nopalmo.manager.DirectCommandBlob;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 import pkg.deepCurse.nopalmo.utils.UptimePing;
 
-public class Ping implements GuildCommandInterface, DirectCommandInterface {
+public class Ping implements DualCommandInterface {
 
 	@Override
-	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
-		dualCommand(new CommandBlob(blob), argumentMap);
-	}
-	
-	@Override
-	public void runDirectCommand(DirectCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
-		dualCommand(new CommandBlob(blob), argumentMap);
-	}
-	
-	private void dualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+	public void runDualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
 		MessageChannel channel = blob.getChannel();
 		

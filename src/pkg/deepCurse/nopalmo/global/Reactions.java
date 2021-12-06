@@ -8,6 +8,8 @@ public class Reactions {
 
 	public static void init() {
 		insert("galaxyThumb", 801657838358495232L);
+		insert("kirbo_wadafuq", 799633705068003338L);
+		
 	}
 
 	public static void insert(String input, long id) {

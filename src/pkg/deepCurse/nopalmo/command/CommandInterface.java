@@ -30,7 +30,7 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 	public abstract HelpPage getHelpPage();
 
 	public enum HelpPage {
-		General, DEV, EGG, Moderation, Fun, Info
+		General, Moderation, Fun, Info, Extra, TESTING, DEV, EGG
 	}
 
 	public default String getHelp() {
@@ -63,8 +63,7 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 			runDualCommand(new CommandBlob(blob), argumentMap);
 		}
 
-		public void runDualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap)
-				throws Exception;
+		public void runDualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception;
 
 	}
 

@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import pkg.deepCurse.nopalmo.command.CommandInterface.DirectCommandInterface;
-import pkg.deepCurse.nopalmo.command.commands.Ping;
+import pkg.deepCurse.nopalmo.command.commands.info.Ping;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.global.Tools;
@@ -29,7 +29,6 @@ public class DirectCommandManager extends CommandManager {
 	}
 
 	public void init() {
-		
 		addCommand(new Ping());
 		
 	}
@@ -113,25 +112,6 @@ public class DirectCommandManager extends CommandManager {
 										}
 									}
 								}
-//
-//								if (guildCommand.getArguments() != null) {
-//
-//									String newArg = x;
-//									
-//									if (!newArg.startsWith(Argument.argumentPrefix)) {
-//										if (guildCommand.getArguments().get(newArg)!=null) {
-//											
-//										}
-//									}
-//									
-//									if (guildCommand.getArguments().containsKey(newArg)) {
-//
-//										argumentList.put(guildCommand.getArguments().get(newArg).getArgName(),
-//												guildCommand.getArguments().get(newArg));
-//									} else
-//
-//										argumentList.put(newArg, new Argument(newArg));
-//								}
 							}
 						}
 					}
