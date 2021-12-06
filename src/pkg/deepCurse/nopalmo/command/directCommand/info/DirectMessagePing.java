@@ -1,20 +1,21 @@
-package pkg.deepCurse.nopalmo.command.guildCommand.info;
+package pkg.deepCurse.nopalmo.command.directCommand.info;
 
 import java.util.HashMap;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import pkg.deepCurse.nopalmo.command.GuildCommand;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import pkg.deepCurse.nopalmo.command.DirectCommand;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
+import pkg.deepCurse.nopalmo.manager.DirectCommandBlob;
 import pkg.deepCurse.nopalmo.utils.UptimePing;
 
-public class Ping extends GuildCommand {
+public class DirectMessagePing extends DirectCommand {
 
 	@Override
-	public void runCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+	public void runCommand(DirectCommandBlob blob,
+			HashMap<String, Argument> argumentMap) throws Exception {
 
-		GuildMessageReceivedEvent event = blob.getEvent();
+		MessageReceivedEvent event = blob.getEvent();
 
 		if (argumentMap.isEmpty()) {
 			event.getChannel().sendMessage("Pong!\n" + event.getJDA().getGatewayPing() + "ms\n").queue();
@@ -26,28 +27,17 @@ public class Ping extends GuildCommand {
 			event.getChannel().sendMessage("Gathering data. . .").queue(msg -> {
 				long timeToProcess = System.currentTimeMillis();
 
-				long jdaPing = event.getJDA().getGatewayPing();
-				long googlePing = -1;
-				try {
-					googlePing = UptimePing.sendPing("www.google.com");
+				try { // TODO rewrite this block, all tries are not good practice
+
+					String out = "Pong!\n" + "Google: " + UptimePing.sendPing("www.google.com") + "ms\n"
+							+ "JDA Gateway: " + event.getJDA().getGatewayPing() + "ms\n" + "www.discord.com: "
+							+ UptimePing.sendPing("www.discord.com") + "ms";
+
+					msg.editMessage(out + "\nTime to process: " + (System.currentTimeMillis() - timeToProcess) + "ms")
+							.queue();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				long discordPing = -1;
-				try {
-					discordPing = UptimePing.sendPing("www.discord.com");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				String out = "Ping:\n"
-						+ (googlePing > 0 ? "Google: " + googlePing + "ms\n" : "Could not connect to www.google.com\n")
-						+ (discordPing > 0 ? "Discord: " + discordPing + "ms\n"
-								: "Could not connect to www.discord.com\n")
-						+ "JDA-Discord heartbeat: "+jdaPing+"ms";
-
-				msg.editMessage(out + "\nTime to process: " + (System.currentTimeMillis() - timeToProcess) + "ms")
-						.queue();
 			});
 		}
 

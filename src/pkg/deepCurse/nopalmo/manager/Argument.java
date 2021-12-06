@@ -1,20 +1,22 @@
 package pkg.deepCurse.nopalmo.manager;
 
 public class Argument {
-	
+
 	// README
 	//
-	// This tool is used simply for now, but it will be worth while if you get used to it
+	// This tool is used simply for now, but it will be worth while if you get used
+	// to it
 	//
-	// this allows extra organization and ease of use throughout the creation of commands
+	// this allows extra organization and ease of use throughout the creation of
+	// commands
 	// instead of one simple list where if args[1] == "all" do code
 	// this allows the same functionality, if not more with a little bit of learning
-	// you can go back to what it was before, but i honestly believe this system is worthwhile
+	// you can go back to what it was before, but i honestly believe this system is
+	// worthwhile
 	// it just needs polish and reports on usage for optimization
 	//
 	//// TL;DR ITS A NEW FEATURE, GIVE IT TIME
-	
-	
+
 	private int requiredArgs = 0;
 	private String argName = null;
 	private Argument[] subArgs = null;
@@ -102,16 +104,15 @@ public class Argument {
 //		this.subArgs = subArgs;
 //		return this;
 //	}
-	
+
 	public Argument setPrefixRequirement(Boolean bool) {
 		this.requiresPrefix = bool;
 		return this;
 	}
-	
+
 	public boolean getPrefixRequirement() {
 		return this.requiresPrefix;
 	}
-	
 
 	public interface RunnableArg {
 

@@ -1,4 +1,4 @@
-package pkg.deepCurse.simpleLoggingGarbage.core;
+package pkg.deepCurse.nopalmo.utils;
 
 import pkg.deepCurse.nopalmo.core.Boot;
 
@@ -9,7 +9,7 @@ import pkg.deepCurse.nopalmo.core.Boot;
  * 
  * @author deepCurse
  */
-public class Log {
+public class LogHelper {
 
 	public static int loggerLevel = 0;
 
@@ -27,12 +27,14 @@ public class Log {
 	}
 
 	public static void crash(Exception e) {
+		e.printStackTrace();
+		System.exit(69420);
 	}
 
 	public static void guildCommandManager(String text) {
 		guildCommandManager(text);
 	}
-	
+
 	public static void guildCommandManager(String text, int level) {
 		if (guildCommandManagerEnabled && level <= loggerLevel) {
 			System.out.println(Boot.class + ": " + text);

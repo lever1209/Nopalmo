@@ -11,60 +11,58 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import pkg.deepCurse.nopalmo.command.GuildCommand;
-import pkg.deepCurse.nopalmo.command.guildCommand.info.Git;
-import pkg.deepCurse.nopalmo.command.guildCommand.info.Help;
-import pkg.deepCurse.nopalmo.command.guildCommand.info.Ping;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import pkg.deepCurse.nopalmo.command.DirectCommand;
+import pkg.deepCurse.nopalmo.command.directCommand.info.DirectMessagePing;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.global.Tools;
 
-public class GuildCommandManager {
+public class DirectCommandManager {
 
-	private final Map<String, GuildCommand> guildCommandMap = new HashMap<>();
+	private final Map<String, DirectCommand> directCommandMap = new HashMap<>();
 	private static Executor executor = null;
 
-	public GuildCommandManager() {
+	public DirectCommandManager() {
 		init();
 		executor = Executors.newSingleThreadExecutor();
 	}
 
 	public void init() {
-		addCommand(new Help(this));
-		addCommand(new Ping());
-		addCommand(new Git());
+		
+		addCommand(new DirectMessagePing());
+		
 	}
 
-	private void addCommand(GuildCommand c) {
-		if (!guildCommandMap.containsKey(c.getCommandName())) {
-			guildCommandMap.put(c.getCommandName(), c);
+	private void addCommand(DirectCommand c) {
+		if (!directCommandMap.containsKey(c.getCommandName())) {
+			directCommandMap.put(c.getCommandName(), c);
 		} else {
-			guildCommandMap.remove(c.getCommandName());
-			guildCommandMap.put(c.getCommandName(), c);
+			directCommandMap.remove(c.getCommandName());
+			directCommandMap.put(c.getCommandName(), c);
 		}
 	}
 
-	public Collection<GuildCommand> getGuildCommands() {
-		return guildCommandMap.values();
+	public Collection<DirectCommand> getDirectCommands() {
+		return directCommandMap.values();
 	}
 
-	public GuildCommand getCommand(String commandName) {
+	public DirectCommand getCommand(String commandName) {
 		if (commandName != null) {
-			return guildCommandMap.get(commandName);
+			return directCommandMap.get(commandName);
 		}
 		return null;
 	}
 
-	public void startCommand(GuildMessageReceivedEvent guildMessage) {
+	public void startCommand(MessageReceivedEvent messageReceivedEvent) {
 
-		final String message = guildMessage.getMessage().getContentRaw();
+		final String message = messageReceivedEvent.getMessage().getContentRaw();
 
 		final String[] split = message.replaceFirst("(?i)" + Pattern.quote(DatabaseTools.Tools.Global.prefix), "")
 				.split("\\s+");
 		final String command = split[0].toLowerCase();
 
-		if (guildCommandMap.containsKey(command)) {
+		if (directCommandMap.containsKey(command)) {
 			final List<String> args = Arrays.asList(split).subList(1, split.length);
 
 			executor.execute(() -> {
@@ -74,8 +72,8 @@ public class GuildCommandManager {
 					// ArrayList<String> newArguments = new ArrayList<String>();
 					// ArrayList<String> commandFlags = new ArrayList<String>();
 
-					GuildCommandBlob commandBlob = new GuildCommandBlob(guildMessage);
-					GuildCommand guildCommand = guildCommandMap.get(command);
+					DirectCommandBlob commandBlob = new DirectCommandBlob(messageReceivedEvent);
+					DirectCommand directCommand = directCommandMap.get(command);
 					HashMap<String, Argument> argumentList = new HashMap<String, Argument>();
 
 					boolean printTime = false;
@@ -93,28 +91,28 @@ public class GuildCommandManager {
 							commandBlob.setUserID(380045419381784576L);
 							break;
 						case "\\del":
-							guildMessage.getMessage().delete().queue();
+							messageReceivedEvent.getMessage().delete().queue();
 							break;
 						default: // in the rewrite process
 							if (argSkipCount <= 0) {
 
-								if (guildCommand.getArguments() != null) {
+								if (directCommand.getArguments() != null) {
 									if (x.startsWith(Argument.argumentPrefix)) {
 
 										String pre = x.substring(Argument.argumentPrefix.length());
 										
-										if (guildCommand.getArguments().keySet().contains(pre)) {
-											argumentList.put(pre, guildCommand.getArguments().get(pre));
+										if (directCommand.getArguments().keySet().contains(pre)) {
+											argumentList.put(pre, directCommand.getArguments().get(pre));
 										} else {
-											Tools.wrongUsage(guildMessage.getChannel(), guildCommand);
+											Tools.wrongUsage(messageReceivedEvent.getChannel(), directCommand);
 											remainsValid = false;
 										}
 									} else {
-										if (guildCommand.getArguments().get(x).getPrefixRequirement()) {
-											Tools.wrongUsage(guildMessage.getChannel(), guildCommand);
+										if (directCommand.getArguments().get(x).getPrefixRequirement()) {
+											Tools.wrongUsage(messageReceivedEvent.getChannel(), directCommand);
 											remainsValid = false;
 										} else {
-											argumentList.put(x, guildCommand.getArguments().get(x));
+											argumentList.put(x, directCommand.getArguments().get(x));
 										}
 									}
 								}
@@ -144,35 +142,35 @@ public class GuildCommandManager {
 					commandBlob.setCommandManager(this);
 					
 					if (remainsValid) {
-						guildCommand.runCommand(commandBlob, argumentList);
+						directCommand.runCommand(commandBlob, argumentList);
 					}
 
 					if (printTime) {
-						guildMessage.getChannel()
+						messageReceivedEvent.getChannel()
 								.sendMessage("Time to run: " + (System.currentTimeMillis() - commandStartTime) + "ms")
 								.queue();
 					}
 
 				} catch (Exception e) {
 					if (Boot.isProd) {
-						guildMessage.getChannel().sendMessage("```properties\n" + e + "```").queue();
+						messageReceivedEvent.getChannel().sendMessage("```properties\n" + e + "```").queue();
 					} else {
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						e.printStackTrace(pw);
-						guildMessage.getChannel().sendMessage("```properties\n" + sw.toString() + "```").queue();
+						messageReceivedEvent.getChannel().sendMessage("```properties\n" + sw.toString() + "```").queue();
 						System.err.println("Exception caught in: " + e.toString());
 						e.printStackTrace();
 					}
 				} catch (Throwable t) {
 
 					if (Boot.isProd) {
-						guildMessage.getChannel().sendMessage("```mathematica\n" + t + "```").queue();
+						messageReceivedEvent.getChannel().sendMessage("```mathematica\n" + t + "```").queue();
 					} else {
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						t.printStackTrace(pw);
-						guildMessage.getChannel().sendMessage("```mathematica\n" + sw.toString() + "```").queue();
+						messageReceivedEvent.getChannel().sendMessage("```mathematica\n" + sw.toString() + "```").queue();
 						System.err.println("Error caught in: " + t.toString());
 						t.printStackTrace();
 					}

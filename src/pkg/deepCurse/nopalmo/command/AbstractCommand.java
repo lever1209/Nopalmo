@@ -5,22 +5,13 @@ import java.util.HashMap;
 import org.jetbrains.annotations.Nullable;
 
 import pkg.deepCurse.nopalmo.manager.Argument;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
-import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 
-public abstract class Command {
-	
-	public abstract void runCommand(GuildCommandBlob blob, GuildCommandManager commandManager,
-			HashMap<String, Argument> argumentList) throws Exception;
+public abstract class AbstractCommand { // TODO rewrite to implement type args?
 
 	public abstract String[] getCommandCalls();
 
 	public String getCommandName() {
 		return getCommandCalls()[0];
-	}
-
-	public boolean isHidden() {
-		return false;
 	}
 
 	public boolean isNSFW() {
@@ -39,17 +30,14 @@ public abstract class Command {
 	}
 
 	public String getHelp() {
-		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	public String getUsage() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public int getTimeout() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -58,5 +46,4 @@ public abstract class Command {
 		return null;
 	}
 
-	
 }

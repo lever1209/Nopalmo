@@ -13,37 +13,26 @@ import org.jetbrains.annotations.Nullable;
 
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
-import pkg.deepCurse.simpleLoggingGarbage.core.Log;
 
 public class DatabaseTools {
 
 	private static Connection connection = null;
 
-	public DatabaseTools(String password) throws SQLException {
+	public DatabaseTools(String password) throws SQLException, ClassNotFoundException {
 		connection = createConnection(password);
 		Global.updatePrefix();
 	}
 
-	@SuppressWarnings("deprecation")
-	public static Connection createConnection(String password) throws SQLException {
+	public static Connection createConnection(String password) throws SQLException, ClassNotFoundException {
 
 		String dbName = Boot.isProd ? "nopalmo" : "chaos";
 
 		String driver = "com.mysql.cj.jdbc.Driver";
 		String url = "jdbc:mysql://localhost/" + dbName;
 		String username = "nopalmo";
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-			Log.crash(e);
-		}
 
-		try {
-			return DriverManager.getConnection(url, username, password);
-		} catch (SQLException e) {
-			SQLCode.sqlTranslate("Generate connection", e);
-			throw new SQLException(e);
-		}
+		Class.forName(driver);
+		return DriverManager.getConnection(url, username, password);
 	}
 
 	private static void checkUpdateCounts(PreparedStatement pstmt, int[] updateCounts) {

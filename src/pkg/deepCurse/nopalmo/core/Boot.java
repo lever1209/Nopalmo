@@ -2,8 +2,6 @@ package pkg.deepCurse.nopalmo.core;
 
 import java.sql.SQLException;
 
-import javax.security.auth.login.LoginException;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -12,57 +10,60 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.global.Reactions;
+import pkg.deepCurse.nopalmo.listener.DirectMessageReceivedListener;
 import pkg.deepCurse.nopalmo.listener.GuildMessageReceivedListener;
+import pkg.deepCurse.nopalmo.manager.DirectCommandManager;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
-import pkg.deepCurse.simpleLoggingGarbage.core.Log;
+import pkg.deepCurse.nopalmo.utils.LogHelper;
 
 public class Boot {
 
 	public static JDA bot;
 	public static DatabaseTools databaseTools = null;
 	public static GuildCommandManager guildCommandManager = new GuildCommandManager(); // move to master manager
+	public static DirectCommandManager directCommandManager = new DirectCommandManager(); // move to master manager
+	
 	public static boolean isProd = false;
 
 	public static void main(String[] args) {
-		Log.boot("Booting. . .");
+		LogHelper.boot("Booting. . .");
 
 		long preBootTime = System.currentTimeMillis();
-		
+
 		isProd = args[2].contentEquals("prod");
-		
-		Log.boot("Connecting to mariadb:nopalmo");
+
+		LogHelper.boot("Connecting to mariadb:nopalmo");
 		try {
 			databaseTools = new DatabaseTools(args[1]);
-			Log.boot("Connected. . .");
-		} catch (SQLException e1) {
+			LogHelper.boot("Connected. . .");
+		} catch (SQLException | ClassNotFoundException e1) {
 			e1.printStackTrace();
-			Log.boot("Failed to connect. . .\nShutting down. . .");
+			LogHelper.boot("Failed to connect. . .\nShutting down. . .");
 			System.exit(4);
 		}
-		
-		Log.boot("Init reaction/emote list");
+
+		LogHelper.boot("Init reaction/emote list");
 		Reactions.init();
-		Log.boot("Initialized reaction/emote list. . .");
-		Log.boot("Init guild commands list");
+		LogHelper.boot("Initialized reaction/emote list. . .");
+		LogHelper.boot("Init guild commands list");
 		guildCommandManager.init();
-		Log.boot("Initialized guild commands list. . .");
-		
+		LogHelper.boot("Initialized guild commands list. . .");
+
 		try {
 			bot = JDABuilder.createDefault(args[0]).setChunkingFilter(ChunkingFilter.NONE)
 					.setMemberCachePolicy(MemberCachePolicy.NONE).enableIntents(GatewayIntent.GUILD_MEMBERS)
 					.setActivity(Activity.watching("Loading users...")).setIdle(true)
-					.addEventListeners(new GuildMessageReceivedListener()).build().awaitReady();
-		} catch (LoginException e) {
-			Log.crash(e);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+					.addEventListeners(new GuildMessageReceivedListener()).addEventListeners(new DirectMessageReceivedListener()) .build().awaitReady();
+		} catch (Exception e) {
+			LogHelper.crash(e);
 		}
-		
+
 		bot.getPresence().setActivity(Activity.listening("Infected Mushroom"));
-		
+
 		long bootTime = System.currentTimeMillis() - preBootTime;
-		
-		Log.boot("Taken "+bootTime+"ms to boot");
+
+		LogHelper.boot("Taken " + bootTime + "ms to boot");
 		
 	}
+
 }
