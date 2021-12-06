@@ -7,13 +7,12 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class DirectCommandBlob {
 	
 	private DirectCommandManager commandManager = null;
-	private ArrayList<String> args = null;
-	
+	private ArrayList<String> args = null;	
+	private MessageReceivedEvent event = null;
+
 	private long userID = 0;
 	private long channelID = 0;
 	
-	private MessageReceivedEvent event = null;
-
 	public DirectCommandBlob(MessageReceivedEvent event) {
 		setUserID(event.getAuthor().getIdLong());
 		setChannelID(event.getChannel().getIdLong());this.event = event;

@@ -12,17 +12,17 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import pkg.deepCurse.nopalmo.command.GuildCommand;
-import pkg.deepCurse.nopalmo.command.guildCommand.info.Git;
-import pkg.deepCurse.nopalmo.command.guildCommand.info.Help;
-import pkg.deepCurse.nopalmo.command.guildCommand.info.Ping;
+import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
+import pkg.deepCurse.nopalmo.command.commands.Git;
+import pkg.deepCurse.nopalmo.command.commands.Help;
+import pkg.deepCurse.nopalmo.command.commands.Ping;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.global.Tools;
 
-public class GuildCommandManager {
+public class GuildCommandManager extends CommandManager {
 
-	private final Map<String, GuildCommand> guildCommandMap = new HashMap<>();
+	private final Map<String, GuildCommandInterface> guildCommandMap = new HashMap<>();
 	private static Executor executor = null;
 
 	public GuildCommandManager() {
@@ -36,7 +36,7 @@ public class GuildCommandManager {
 		addCommand(new Git());
 	}
 
-	private void addCommand(GuildCommand c) {
+	private void addCommand(GuildCommandInterface c) {
 		if (!guildCommandMap.containsKey(c.getCommandName())) {
 			guildCommandMap.put(c.getCommandName(), c);
 		} else {
@@ -45,11 +45,11 @@ public class GuildCommandManager {
 		}
 	}
 
-	public Collection<GuildCommand> getGuildCommands() {
+	public Collection<GuildCommandInterface> getGuildCommands() {
 		return guildCommandMap.values();
 	}
 
-	public GuildCommand getCommand(String commandName) {
+	public GuildCommandInterface getCommand(String commandName) {
 		if (commandName != null) {
 			return guildCommandMap.get(commandName);
 		}
@@ -75,7 +75,7 @@ public class GuildCommandManager {
 					// ArrayList<String> commandFlags = new ArrayList<String>();
 
 					GuildCommandBlob commandBlob = new GuildCommandBlob(guildMessage);
-					GuildCommand guildCommand = guildCommandMap.get(command);
+					GuildCommandInterface guildCommand = guildCommandMap.get(command);
 					HashMap<String, Argument> argumentList = new HashMap<String, Argument>();
 
 					boolean printTime = false;
@@ -144,7 +144,7 @@ public class GuildCommandManager {
 					commandBlob.setCommandManager(this);
 					
 					if (remainsValid) {
-						guildCommand.runCommand(commandBlob, argumentList);
+						guildCommand.runGuildCommand(commandBlob, argumentList);
 					}
 
 					if (printTime) {

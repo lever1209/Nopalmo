@@ -1,4 +1,4 @@
-package pkg.deepCurse.nopalmo.command.guildCommand.info;
+package pkg.deepCurse.nopalmo.command.commands;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -6,13 +6,13 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import pkg.deepCurse.nopalmo.command.GuildCommand;
+import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 
-public class Help extends GuildCommand {
+public class Help implements GuildCommandInterface {
 
 	public final GuildCommandManager manager;
 
@@ -21,14 +21,14 @@ public class Help extends GuildCommand {
 	}
 
 	@Override
-	public void runCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
 		if (argumentMap.isEmpty()) {
 			EmbedBuilder embed = new EmbedBuilder().setTitle("Commands:");
 
 			HashMap<HelpPage, String> commandHash = new HashMap<HelpPage, String>();
 
-			for (GuildCommand command : manager.getGuildCommands()) {
+			for (GuildCommandInterface command : manager.getGuildCommands()) {
 
 				commandHash.put(command.getHelpPage(),
 						commandHash.get(command.getHelpPage()) + command.getCommandName());
@@ -37,12 +37,12 @@ public class Help extends GuildCommand {
 
 			StringBuilder sB = new StringBuilder();
 
-			GuildCommand ping = blob.getCommandManager().getCommand("ping");
+			GuildCommandInterface ping = blob.getCommandManager().getCommand("ping");
 			if (ping != null) {
 				sB.append("`" + ping.getUsage() + "`\n");
 			}
 
-			GuildCommand help = blob.getCommandManager().getCommand("help");
+			GuildCommandInterface help = blob.getCommandManager().getCommand("help");
 			if (help != null) {
 				sB.append("`" + help.getUsage() + "`\n");
 			}
@@ -86,7 +86,7 @@ public class Help extends GuildCommand {
 
 		// ##########################################################################################################################
 		try {
-			GuildCommand command = manager.getCommand(String.join("", blob.getArgs()));
+			GuildCommandInterface command = manager.getCommand(String.join("", blob.getArgs()));
 
 			// event.getChannel().sendMessage("Command help for `" + command.commandName() +
 			// "`:\n\tUsage: "+ command.usageString() + "\n" +

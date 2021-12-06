@@ -27,12 +27,10 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 		if (messageRaw.contentEquals(Global.prefix + Global.prefix)
 				&& DatabaseTools.Tools.Developers.canPowerOffBot(event.getAuthor().getIdLong())) {
 
-			// message.addReaction(Reactions.getReaction("galaxyThumb")).complete(); TODO re
-			// enable
+			// message.addReaction(Reactions.getReaction("galaxyThumb")).complete(); 
+			// TODO re enable
 
 			message.delete().complete();
-
-			// pause thread as last resort
 
 			event.getJDA().shutdown();
 			System.exit(0);

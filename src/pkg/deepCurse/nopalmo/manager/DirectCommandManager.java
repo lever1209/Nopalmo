@@ -12,15 +12,15 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import pkg.deepCurse.nopalmo.command.DirectCommand;
-import pkg.deepCurse.nopalmo.command.directCommand.info.DirectMessagePing;
+import pkg.deepCurse.nopalmo.command.CommandInterface.DirectCommandInterface;
+import pkg.deepCurse.nopalmo.command.commands.Ping;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.global.Tools;
 
-public class DirectCommandManager {
+public class DirectCommandManager extends CommandManager {
 
-	private final Map<String, DirectCommand> directCommandMap = new HashMap<>();
+	private final Map<String, DirectCommandInterface> directCommandMap = new HashMap<>();
 	private static Executor executor = null;
 
 	public DirectCommandManager() {
@@ -30,11 +30,11 @@ public class DirectCommandManager {
 
 	public void init() {
 		
-		addCommand(new DirectMessagePing());
+		addCommand(new Ping());
 		
 	}
 
-	private void addCommand(DirectCommand c) {
+	private void addCommand(DirectCommandInterface c) {
 		if (!directCommandMap.containsKey(c.getCommandName())) {
 			directCommandMap.put(c.getCommandName(), c);
 		} else {
@@ -43,11 +43,11 @@ public class DirectCommandManager {
 		}
 	}
 
-	public Collection<DirectCommand> getDirectCommands() {
+	public Collection<DirectCommandInterface> getDirectCommands() {
 		return directCommandMap.values();
 	}
 
-	public DirectCommand getCommand(String commandName) {
+	public DirectCommandInterface getCommand(String commandName) {
 		if (commandName != null) {
 			return directCommandMap.get(commandName);
 		}
@@ -69,11 +69,8 @@ public class DirectCommandManager {
 				long commandStartTime = System.currentTimeMillis();
 
 				try {
-					// ArrayList<String> newArguments = new ArrayList<String>();
-					// ArrayList<String> commandFlags = new ArrayList<String>();
-
 					DirectCommandBlob commandBlob = new DirectCommandBlob(messageReceivedEvent);
-					DirectCommand directCommand = directCommandMap.get(command);
+					DirectCommandInterface directCommand = directCommandMap.get(command);
 					HashMap<String, Argument> argumentList = new HashMap<String, Argument>();
 
 					boolean printTime = false;
@@ -142,7 +139,7 @@ public class DirectCommandManager {
 					commandBlob.setCommandManager(this);
 					
 					if (remainsValid) {
-						directCommand.runCommand(commandBlob, argumentList);
+						directCommand.runDirectCommand(commandBlob, argumentList);
 					}
 
 					if (printTime) {

@@ -1,32 +1,44 @@
-package pkg.deepCurse.nopalmo.command.guildCommand.info;
+package pkg.deepCurse.nopalmo.command.commands;
 
 import java.util.HashMap;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import pkg.deepCurse.nopalmo.command.GuildCommand;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import pkg.deepCurse.nopalmo.command.CommandInterface.DirectCommandInterface;
+import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
+import pkg.deepCurse.nopalmo.manager.CommandBlob;
+import pkg.deepCurse.nopalmo.manager.DirectCommandBlob;
 import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 import pkg.deepCurse.nopalmo.utils.UptimePing;
 
-public class Ping extends GuildCommand {
+public class Ping implements GuildCommandInterface, DirectCommandInterface {
 
 	@Override
-	public void runCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+		dualCommand(new CommandBlob(blob), argumentMap);
+	}
+	
+	@Override
+	public void runDirectCommand(DirectCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+		dualCommand(new CommandBlob(blob), argumentMap);
+	}
+	
+	private void dualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
-		GuildMessageReceivedEvent event = blob.getEvent();
-
+		MessageChannel channel = blob.getChannel();
+		
 		if (argumentMap.isEmpty()) {
-			event.getChannel().sendMessage("Pong!\n" + event.getJDA().getGatewayPing() + "ms\n").queue();
+			channel.sendMessage("Pong!\n" + blob.getJDA().getGatewayPing() + "ms\n").queue();
 			return;
 		}
 
 		if (argumentMap.get("all") != null) {
 
-			event.getChannel().sendMessage("Gathering data. . .").queue(msg -> {
+			channel.sendMessage("Gathering data. . .").queue(msg -> {
 				long timeToProcess = System.currentTimeMillis();
 
-				long jdaPing = event.getJDA().getGatewayPing();
+				long jdaPing = blob.getJDA().getGatewayPing();
 				long googlePing = -1;
 				try {
 					googlePing = UptimePing.sendPing("www.google.com");
@@ -50,21 +62,6 @@ public class Ping extends GuildCommand {
 						.queue();
 			});
 		}
-
-//		if (argumentArray == null || argumentArray.isEmpty()) {
-//			
-//			return;
-//		} else {
-//
-//			for (Argument i : argumentArray) {
-//				if (i.getArgName().contentEquals("all")) {
-//					
-//				} else {
-//					Tools.wrongUsage(event.getChannel(), this);
-//				}
-//			}
-//			return;
-//		}
 	}
 
 	@Override
