@@ -13,59 +13,26 @@ import org.jetbrains.annotations.Nullable;
 
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
-import pkg.deepCurse.simpleLoggingGarbage.core.Log;
 
 public class DatabaseTools {
 
 	private static Connection connection = null;
 
-	public DatabaseTools(String password) throws SQLException {
+	public DatabaseTools(String password) throws SQLException, ClassNotFoundException {
 		connection = createConnection(password);
 		Global.updatePrefix();
 	}
 
-	public static Connection createConnection(String password) throws SQLException {
+	public static Connection createConnection(String password) throws SQLException, ClassNotFoundException {
 
 		String dbName = Boot.isProd ? "nopalmo" : "chaos";
 
 		String driver = "com.mysql.cj.jdbc.Driver";
 		String url = "jdbc:mysql://localhost/" + dbName;
 		String username = "nopalmo";
-		try {
-			Class.forName(driver);
-		} catch (ClassNotFoundException e) {
-			Log.crash(e);
-		}
 
-		try {
-			return DriverManager.getConnection(url, username, password);
-		} catch (SQLException e) {
-			sqlTranslate("Generate connection", e);
-			throw new SQLException(e);
-		}
-	}
-
-	private static void sqlTranslate(String action, int errorCode) {
-		switch (errorCode) {
-		case 1062:
-			System.err.println("Failed to execute; errorCode=" + errorCode + "; ER_DUP_ENTRY; On action " + action);
-			break;
-		case 1054:
-			System.err.println("Failed to execute; errorCode=" + errorCode + "; ER_BAD_FIELD_ERROR; On action " + action);
-			break;
-		default:
-			System.err.println("Failed to execute; errorCode=" + errorCode + "; Unknown code; On action " + action);
-			break;
-		}
-	}
-
-	@Deprecated
-	private static void sqlTranslate(String action, SQLException e) {
-		sqlTranslate(action, e.getErrorCode());
-	}
-
-	private static void sqlTranslate(PreparedStatement pstmt, SQLException e) {
-		sqlTranslate(pstmt.toString(), e.getErrorCode());
+		Class.forName(driver);
+		return DriverManager.getConnection(url, username, password);
 	}
 
 	private static void checkUpdateCounts(PreparedStatement pstmt, int[] updateCounts) {
@@ -87,8 +54,9 @@ public class DatabaseTools {
 
 	public class Tools {
 
-		// these sub classes will represent tables and the methods therein will be for actions within said table
-		
+		// these sub classes will represent tables and the methods therein will be for
+		// actions within said table
+
 		public class Guild {
 
 			public class Prefix {
@@ -110,7 +78,7 @@ public class DatabaseTools {
 							return createPrefix(guildID, Global.prefix);
 						}
 					} catch (SQLException e) {
-						sqlTranslate(query, e.getErrorCode());
+						SQLCode.getMessage(query, e.getErrorCode());
 						return null;
 					} finally { // @formatter:off
 						try {if (rs != null)rs.close();} catch (Exception e) {}
@@ -143,7 +111,7 @@ public class DatabaseTools {
 						// connection.commit();
 						return prefix;
 					} catch (SQLException e) {
-						sqlTranslate(pstmt, e);
+						SQLCode.sqlTranslate(pstmt, e);
 						for (int i : new int[] { 1062 }) {
 							if (i == e.getErrorCode()) {
 								return setPrefix(connection, guildID, prefix);
@@ -181,7 +149,7 @@ public class DatabaseTools {
 						conn.commit();
 						return prefix;
 					} catch (SQLException e) {
-						sqlTranslate(pstmt, e);
+						SQLCode.sqlTranslate(pstmt, e);
 						try {
 							conn.rollback();
 						} catch (Exception e2) {
@@ -212,7 +180,7 @@ public class DatabaseTools {
 					}
 
 				} catch (SQLException e) {
-					sqlTranslate(query, e.getErrorCode());
+					SQLCode.getMessage(query, e.getErrorCode());
 					// System.out.println("eeeeee");
 					return false;
 				} finally {
@@ -236,7 +204,7 @@ public class DatabaseTools {
 		}
 
 		public class Global {
-			
+
 			public static String prefix = null;
 
 			public static void updatePrefix() throws SQLException {
@@ -257,7 +225,7 @@ public class DatabaseTools {
 					}
 
 				} catch (SQLException e) {
-					sqlTranslate(query, e.getErrorCode());
+					SQLCode.getMessage(query, e.getErrorCode());
 					// System.out.println("eeeeee");
 					throw new SQLException(e);
 				} finally {

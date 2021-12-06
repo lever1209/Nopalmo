@@ -1,41 +1,23 @@
 package pkg.deepCurse.nopalmo.command;
 
+import java.util.HashMap;
+
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import pkg.deepCurse.nopalmo.manager.CommandBlob;
-import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
+import pkg.deepCurse.nopalmo.manager.Argument;
+import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 
-public abstract class GuildCommand {
+public abstract class GuildCommand extends AbstractCommand {
 
-	public abstract void run(CommandBlob blob, GuildMessageReceivedEvent guildMessage, GuildCommandManager commandManager) throws Exception;
+	public abstract void runCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception;
 
 	public abstract String[] getCommandCalls();
-
-	public String getCommandName() {
-		return getCommandCalls()[0];
-	}
-
-	public boolean isHidden() {
-		return false;
-	}
-
-	public boolean isNSFW() {
-		return false;
-	}
 
 	public Permission[] getRequiredPermissions() {
 		return null;
 	}
 
-	public boolean isPremium() { // im probably never gonna use this, but ill leave it in for those who want to
-									// see how i would implement it
-		return false;
+	public Permission getRequiredPermission() {
+
+		return null;
 	}
-	
-	public abstract HelpPage getHelpPage();
-	
-	public enum HelpPage {
-		General, DEV, EGG, Moderation, Fun, Info
-	}
-	
 }

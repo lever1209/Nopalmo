@@ -4,33 +4,31 @@ import javax.annotation.Nonnull;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 
-public class GuildMessageReceivedListener extends ListenerAdapter {
+public class DirectMessageReceivedListener extends ListenerAdapter {
 
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
-		System.out.println("GuildMessageReceivedListener is now ready\n" + event.getGuildAvailableCount() + "/"
-				+ event.getGuildTotalCount() + " : " + event.getGuildUnavailableCount() + " <"
-				+ event.getResponseNumber() + ">");
+		System.out.println("DirectMessageReceivedListener is now ready. . .");
 	}
 
 	@Override
-	public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {
+	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
 		Message message = event.getMessage();
 		String messageRaw = message.getContentRaw();
-
+		System.out.println(messageRaw + "\n<@!" + event.getJDA().getSelfUser().getIdLong() + ">");
 		if (messageRaw.contentEquals(Global.prefix + Global.prefix)
 				&& DatabaseTools.Tools.Developers.canPowerOffBot(event.getAuthor().getIdLong())) {
 
 			// message.addReaction(Reactions.getReaction("galaxyThumb")).complete(); TODO re
 			// enable
 
-			message.delete().complete();
+			// message.delete().complete();
 
 			// pause thread as last resort
 
@@ -38,15 +36,15 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 			System.exit(0);
 		}
 
-		String[] prefixArray = new String[] { DatabaseTools.Tools.Guild.Prefix.getPrefix(event.getGuild().getIdLong()),
-				"<@!" + event.getJDA().getSelfUser().getIdLong() + ">" }; // FIXME BROKEN PING PREFIX
+		String[] prefixArray = new String[] { Global.prefix, "<@! " + event.getJDA().getSelfUser().getIdLong() + ">" };
+		// FIXME BROKEN PING PREFIX
 
 		boolean shouldReturn = true;
 		for (String i : prefixArray) { // TODO switch to [] to skip for loop?
 
 			if (messageRaw.startsWith(i)) {
+				// System.out.println("breaking");
 				shouldReturn = false;
-				break;
 			}
 		}
 
@@ -57,9 +55,8 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 			return;
 		}
 
-		if (!event.getAuthor().isBot()) {
-
-			Boot.guildCommandManager.startCommand(event);
+		if (!event.getAuthor().isBot() && !event.isFromGuild()) {
+			Boot.directCommandManager.startCommand(event);
 		}
 
 	}
