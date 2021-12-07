@@ -27,7 +27,7 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 		if (messageRaw.contentEquals(Global.prefix + Global.prefix)
 				&& DatabaseTools.Tools.Developers.canPowerOffBot(event.getAuthor().getIdLong())) {
 
-			// message.addReaction(Reactions.getReaction("galaxyThumb")).complete(); 
+			// message.addReaction(Reactions.getReaction("galaxyThumb")).complete();
 			// TODO re enable
 
 			message.delete().complete();
@@ -36,30 +36,8 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 			System.exit(0);
 		}
 
-		String[] prefixArray = new String[] { DatabaseTools.Tools.Guild.Prefix.getPrefix(event.getGuild().getIdLong()),
-				"<@!" + event.getJDA().getSelfUser().getIdLong() + ">" }; // FIXME BROKEN PING PREFIX
-
-		boolean shouldReturn = true;
-		for (String i : prefixArray) { // TODO switch to [] to skip for loop?
-
-			if (messageRaw.startsWith(i)) {
-				shouldReturn = false;
-				break;
-			}
-		}
-
-		// TODO add pre manager commands
-
-		if (shouldReturn) {
-
-			return;
-		}
-
 		if (!event.getAuthor().isBot()) {
-
 			Boot.guildCommandManager.startCommand(event);
 		}
-
 	}
-
 }

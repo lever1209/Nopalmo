@@ -59,7 +59,7 @@ public class Ping implements DualCommandInterface {
 
 	@Override
 	public String getUsage() {
-		return Global.prefix + "ping [" + Argument.argumentPrefix + "all]";
+		return Global.prefix + getCommandName()+" [" + Argument.argumentPrefix + "all]";
 	}
 
 	@Override
@@ -74,6 +74,11 @@ public class Ping implements DualCommandInterface {
 		args.put("all", new Argument("all").setPrefixRequirement(true));
 
 		return args;
+	}
+
+	@Override
+	public String getHelp() {
+		return "Returns the jda heartbeat ping";
 	}
 
 }

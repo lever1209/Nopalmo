@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.jetbrains.annotations.Nullable;
 
 import net.dv8tion.jda.api.Permission;
+import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import pkg.deepCurse.nopalmo.manager.DirectCommandBlob;
@@ -33,14 +34,11 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 		General, Moderation, Fun, Info, Extra, TESTING, DEV, EGG
 	}
 
-	public default String getHelp() {
-		return null;
-	}
+	public String getHelp();
 
 	public default String getUsage() {
-		return null;
+		return Global.prefix + getCommandName();
 	}
-
 	public default int getTimeout() {
 		return 0;
 	}
