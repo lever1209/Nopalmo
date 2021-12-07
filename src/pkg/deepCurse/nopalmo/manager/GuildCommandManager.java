@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.command.commands.general.Prefix;
+import pkg.deepCurse.nopalmo.command.commands.general.Test;
 import pkg.deepCurse.nopalmo.command.commands.info.Git;
 import pkg.deepCurse.nopalmo.command.commands.info.Help;
 import pkg.deepCurse.nopalmo.command.commands.info.Ping;
@@ -36,6 +37,7 @@ public class GuildCommandManager extends CommandManager {
 		addCommand(new Ping());
 		addCommand(new Git());
 		addCommand(new Prefix());
+		addCommand(new Test());
 	}
 
 	private void addCommand(GuildCommandInterface c) {
@@ -63,13 +65,6 @@ public class GuildCommandManager extends CommandManager {
 		final String message = guildMessageEvent.getMessage().getContentRaw();
 		String prefix = DatabaseTools.Tools.Guild.Prefix.getPrefix(guildMessageEvent.getGuild().getIdLong());
 		String pingPrefix = "<@!" + guildMessageEvent.getJDA().getSelfUser().getIdLong() + ">";
-
-//		String splicer = null;
-//		String[] prefixArray = new String[] { DatabaseTools.Tools.Guild.Prefix.getPrefix(guildMessageEvent.getGuild().getIdLong()),
-//				"<@!" + guildMessageEvent.getJDA().getSelfUser().getIdLong() + ">" }; // FIXME BROKEN PING PREFIX
-//		for () {
-//			
-//		}
 
 		String splicer = null;
 		if (message.startsWith(pingPrefix + " ")) {
@@ -173,13 +168,20 @@ public class GuildCommandManager extends CommandManager {
 											}
 										}
 									} else {
-										if (positionalArgs.get(i).getIsWildcard()) {
-											argumentList.put(positionalArgs.get(i).getArgName(),
-													positionalArgs.get(i).setWildCardString(x));
-										}
-										if (positionalArgs.get(i).isAutoStartRunnable()
-												&& positionalArgs.get(i).getRunnableArg() != null) {
-											positionalArgs.get(i).getRunnableArg().run(new CommandBlob(commandBlob));
+										if (guildCommand.getArguments().get(x) == null) {
+											if (positionalArgs.get(i).getIsWildcard()) {
+												argumentList.put(positionalArgs.get(i).getArgName(),
+														positionalArgs.get(i).setWildCardString(x));
+											}
+											if (positionalArgs.get(i).isAutoStartRunnable()
+													&& positionalArgs.get(i).getRunnableArg() != null) {
+												positionalArgs.get(i).getRunnableArg()
+														.run(new CommandBlob(commandBlob));
+											}
+										} else {
+											
+											// argumentList.put(x, guildCommand.getArguments().get(x));
+											// i--;
 										}
 									}
 								}

@@ -1,7 +1,5 @@
 package pkg.deepCurse.nopalmo.manager;
 
-import pkg.deepCurse.nopalmo.command.CommandInterface;
-
 public class Argument {
 
 	// README

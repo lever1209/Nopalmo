@@ -24,7 +24,6 @@ public class Prefix implements GuildCommandInterface {
 	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
 		
 		if (argumentList.get("prefix") != null) {
-			// System.out.println(argumentList.get("prefix").getWildCardString());
 			Guild.Prefix.setPrefix(
 					blob.getEvent().getGuild().getIdLong(), argumentList.get("prefix").getWildCardString());
 			blob.getEvent().getChannel().sendMessage("Set prefix to " + argumentList.get("prefix").getWildCardString()).queue();
