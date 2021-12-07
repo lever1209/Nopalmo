@@ -106,15 +106,17 @@ public class GuildCommandManager extends CommandManager {
 
 					HashMap<Integer, Argument> positionalArgs = new HashMap<Integer, Argument>();
 
-					for (Argument i : guildCommand.getArguments().values()) {
-						if (i.getPosition() >= 0) {
-							positionalArgs.put(i.getPosition(), i);
-						}
+					if (guildCommand.getArguments() != null) {
+						for (Argument i : guildCommand.getArguments().values()) {
+							if (i.getPosition() >= 0) {
+								positionalArgs.put(i.getPosition(), i);
+							}
 
-						if (i.isSkipOriginalTaskOnRunnable()) {
-							remainsValid = false;
-						}
+							if (i.isSkipOriginalTaskOnRunnable()) {
+								remainsValid = false;
+							}
 
+						}
 					}
 
 					for (int i = 0; i < args.size(); i++) {
