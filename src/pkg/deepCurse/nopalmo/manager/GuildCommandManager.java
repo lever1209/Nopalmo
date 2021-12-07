@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
+import pkg.deepCurse.nopalmo.command.commands.general.Example;
 import pkg.deepCurse.nopalmo.command.commands.general.Prefix;
 import pkg.deepCurse.nopalmo.command.commands.general.Test;
 import pkg.deepCurse.nopalmo.command.commands.info.Git;
@@ -39,6 +40,7 @@ public class GuildCommandManager extends CommandManager {
 		addCommand(new Git());
 		addCommand(new Prefix());
 		addCommand(new Test());
+		addCommand(new Example());
 	}
 
 	private void addCommand(GuildCommandInterface c) {

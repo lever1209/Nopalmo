@@ -295,6 +295,11 @@ public class DatabaseTools {
 				// return null;
 			}
 
+			public static boolean isShuffleStatusEnabled() {
+				
+				return false;
+			}
+
 		}
 
 //		public class Reaction { // started off as a good idea but it sucks

@@ -195,9 +195,7 @@ public class Help implements GuildCommandInterface {
 		HashMap<String, Argument> args = new HashMap<String, Argument>();
 
 		args.put("commandName", new Argument("commandName").setPosition(0).setIsWildcard(true));
-		args.put("dev", new Argument("dev", (CommandBlob blob) -> {
-			blob.getChannel().sendMessage("DEV FLAG USED").queue();
-		}).setPrefixRequirement(true).setAutoStartRunnable(true).setPermissionLevel("infopermission"));
+		args.put("dev", new Argument("dev").setPrefixRequirement(true).setPermissionLevel("infopermission"));
 
 		return args;
 	}

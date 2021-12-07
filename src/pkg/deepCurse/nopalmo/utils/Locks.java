@@ -18,16 +18,26 @@ public class Locks {
 	public static boolean dirLock(String lockName) throws Exception {
 
 		long pid = 0L;
-		Scanner pidScanner = new Scanner(new File(System.getProperty("user.dir") + "/" + lockName));
+
+		File file = new File(System.getProperty("user.dir") + "/" + lockName);
+
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		Scanner pidScanner = new Scanner(file);
+
 		StringBuilder pidBuilder = new StringBuilder();
 		while (pidScanner.hasNext()) {
 			pidBuilder.append(pidScanner.next());
 		}
 		pidScanner.close();
-		pid = Long.parseLong(pidBuilder.toString().replaceAll("[^0-9]", ""));
-		
-		
-		
+		try {
+			pid = Long.parseLong(pidBuilder.toString().replaceAll("[^0-9]", ""));
+		} catch (Exception e) {
+
+		}
+
 		Process proc = new ProcessBuilder().command("readlink", "/proc/" + pid + "/cwd").start();
 		Scanner readlinkScanner = new Scanner(new InputStreamReader(proc.getInputStream()));
 		StringBuilder readlinkBuilder = new StringBuilder();
@@ -35,13 +45,11 @@ public class Locks {
 			readlinkBuilder.append(readlinkScanner.next());
 		}
 		readlinkScanner.close();
-		
-		
-		
+
 		if (readlinkBuilder.toString().contentEquals(new File(System.getProperty("user.dir")).getPath())) {
 			return true;
 		} else {
-			FileWriter writer = new FileWriter(new File(System.getProperty("user.dir") + "/" + lockName));
+			FileWriter writer = new FileWriter(file);
 
 			writer.write(String.valueOf(Boot.pid));
 			writer.close();
