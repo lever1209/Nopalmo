@@ -92,7 +92,7 @@ public class DatabaseTools {
 
 					if (prefix == null || prefix.isEmpty()) {
 						// throw new IllegalArgumentException("Input cannot be empty");
-						prefix = ";";
+						prefix = Global.prefix;
 					}
 
 					PreparedStatement pstmt = null;
@@ -114,7 +114,7 @@ public class DatabaseTools {
 						SQLCode.sqlTranslate(pstmt, e);
 						for (int i : new int[] { 1062 }) {
 							if (i == e.getErrorCode()) {
-								return setPrefix(connection, guildID, prefix);
+								return setPrefix(guildID, prefix);
 							}
 						}
 						try {
@@ -126,7 +126,7 @@ public class DatabaseTools {
 					}
 				}
 
-				public static String setPrefix(Connection conn, long guildID, String prefix)
+				public static String setPrefix(long guildID, String prefix)
 						throws IllegalArgumentException {
 
 					if (prefix.isEmpty()) {
@@ -137,7 +137,7 @@ public class DatabaseTools {
 
 					String query = "update guilds set prefix = ? where guildid = ?;";
 					try {
-						pstmt = conn.prepareStatement(query);
+						pstmt = connection.prepareStatement(query);
 
 						pstmt.setLong(2, guildID);
 						pstmt.setString(1, prefix);
@@ -146,12 +146,12 @@ public class DatabaseTools {
 						int[] updateCounts = pstmt.executeBatch();
 						checkUpdateCounts(pstmt, updateCounts);
 						pstmt.close();
-						conn.commit();
+						// conn.commit();
 						return prefix;
 					} catch (SQLException e) {
 						SQLCode.sqlTranslate(pstmt, e);
 						try {
-							conn.rollback();
+							connection.rollback();
 						} catch (Exception e2) {
 							e.printStackTrace();
 						}

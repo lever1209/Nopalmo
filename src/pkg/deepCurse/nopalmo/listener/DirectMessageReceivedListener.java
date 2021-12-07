@@ -21,16 +21,12 @@ public class DirectMessageReceivedListener extends ListenerAdapter {
 	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
 		Message message = event.getMessage();
 		String messageRaw = message.getContentRaw();
-		System.out.println(messageRaw + "\n<@!" + event.getJDA().getSelfUser().getIdLong() + ">");
+		
 		if (messageRaw.contentEquals(Global.prefix + Global.prefix)
 				&& DatabaseTools.Tools.Developers.canPowerOffBot(event.getAuthor().getIdLong())) {
 
-			// message.addReaction(Reactions.getReaction("galaxyThumb")).complete(); TODO re
-			// enable
-
-			// message.delete().complete();
-
-			// pause thread as last resort
+			// message.addReaction(Reactions.getReaction("galaxyThumb")).complete();
+			// TODO re enable
 
 			event.getJDA().shutdown();
 			System.exit(0);
@@ -43,7 +39,6 @@ public class DirectMessageReceivedListener extends ListenerAdapter {
 		for (String i : prefixArray) { // TODO switch to [] to skip for loop?
 
 			if (messageRaw.startsWith(i)) {
-				// System.out.println("breaking");
 				shouldReturn = false;
 			}
 		}
@@ -51,7 +46,6 @@ public class DirectMessageReceivedListener extends ListenerAdapter {
 		// TODO add pre manager commands
 
 		if (shouldReturn) {
-
 			return;
 		}
 

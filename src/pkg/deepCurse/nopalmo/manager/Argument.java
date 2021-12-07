@@ -1,5 +1,7 @@
 package pkg.deepCurse.nopalmo.manager;
 
+import pkg.deepCurse.nopalmo.command.CommandInterface;
+
 public class Argument {
 
 	// README
@@ -21,6 +23,13 @@ public class Argument {
 	private String argName = null;
 	private Argument[] subArgs = null;
 	private boolean requiresPrefix = false;
+	private Boolean isWildcard;
+	private int position = -1;
+	private String wildCardString = null;
+	private boolean autoStartRunnable = false;
+	private boolean skipOriginalTaskOnRunnable = false;
+	private RunnableArg runnableArg = null;
+	
 	public static final String argumentPrefix = "-"; // This exists for the sole reason of customization and will
 														// generally not change, ever, its recommended you keep it to
 														// something other than empty to help ensure that what the user
@@ -52,6 +61,7 @@ public class Argument {
 		this.requiredArgs = requiredArgs;
 		this.argName = argName;
 		this.subArgs = subArgs;
+		this.runnableArg = runnableArg;
 	}
 
 	/**
@@ -76,6 +86,7 @@ public class Argument {
 	 */
 	public Argument(String argName, RunnableArg runnableArg) {
 		this.argName = argName;
+		this.runnableArg = runnableArg;
 	}
 
 	public int getRequiredArgs() {
@@ -109,15 +120,69 @@ public class Argument {
 		this.requiresPrefix = bool;
 		return this;
 	}
+	
+	public Argument setIsWildcard(Boolean bool) {
+		
+		if (this.position<=-1) {
+			throw new IllegalArgumentException("Cannot create a wildcard without a position; set a position first");
+		}
+		
+		this.isWildcard = bool;
+		return this;
+	}
+	
+	public Boolean getIsWildcard() {
+		return isWildcard;
+	}
 
 	public boolean getPrefixRequirement() {
 		return this.requiresPrefix;
 	}
 
+	public int getPosition() {
+		return position;
+	}
+
+	public Argument setPosition(int position) {
+		this.position = position;
+		return this;
+	}
+
 	public interface RunnableArg {
 
-		public void run();
+		public void run(CommandBlob blob);
 
+	}
+
+	public Argument setWildCardString(String wildCardString) {
+		this.wildCardString = wildCardString;
+		return this;
+	}
+
+	public String getWildCardString() {
+		return wildCardString;
+	}
+
+	public Argument setAutoStartRunnable(boolean bool) {
+		this.autoStartRunnable  = bool;
+		return this;
+	}
+
+	public boolean isAutoStartRunnable() {
+		return autoStartRunnable;
+	}
+
+	public boolean isSkipOriginalTaskOnRunnable() {
+		return skipOriginalTaskOnRunnable;
+	}
+
+	public Argument setSkipOriginalTaskOnRunnable(boolean skipOriginalTaskOnRunnable) {
+		this.skipOriginalTaskOnRunnable = skipOriginalTaskOnRunnable;
+		return this;
+	}
+
+	public RunnableArg getRunnableArg() {
+		return runnableArg;
 	}
 
 }

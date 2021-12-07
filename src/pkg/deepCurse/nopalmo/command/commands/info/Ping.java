@@ -1,32 +1,32 @@
-package pkg.deepCurse.nopalmo.command.guildCommand.info;
+package pkg.deepCurse.nopalmo.command.commands.info;
 
 import java.util.HashMap;
 
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import pkg.deepCurse.nopalmo.command.GuildCommand;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import pkg.deepCurse.nopalmo.command.CommandInterface.DualCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
+import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import pkg.deepCurse.nopalmo.utils.UptimePing;
 
-public class Ping extends GuildCommand {
+public class Ping implements DualCommandInterface {
 
 	@Override
-	public void runCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+	public void runDualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
-		GuildMessageReceivedEvent event = blob.getEvent();
-
+		MessageChannel channel = blob.getChannel();
+		
 		if (argumentMap.isEmpty()) {
-			event.getChannel().sendMessage("Pong!\n" + event.getJDA().getGatewayPing() + "ms\n").queue();
+			channel.sendMessage("Pong!\n" + blob.getJDA().getGatewayPing() + "ms\n").queue();
 			return;
 		}
 
 		if (argumentMap.get("all") != null) {
 
-			event.getChannel().sendMessage("Gathering data. . .").queue(msg -> {
+			channel.sendMessage("Gathering data. . .").queue(msg -> {
 				long timeToProcess = System.currentTimeMillis();
 
-				long jdaPing = event.getJDA().getGatewayPing();
+				long jdaPing = blob.getJDA().getGatewayPing();
 				long googlePing = -1;
 				try {
 					googlePing = UptimePing.sendPing("www.google.com");
@@ -50,21 +50,6 @@ public class Ping extends GuildCommand {
 						.queue();
 			});
 		}
-
-//		if (argumentArray == null || argumentArray.isEmpty()) {
-//			
-//			return;
-//		} else {
-//
-//			for (Argument i : argumentArray) {
-//				if (i.getArgName().contentEquals("all")) {
-//					
-//				} else {
-//					Tools.wrongUsage(event.getChannel(), this);
-//				}
-//			}
-//			return;
-//		}
 	}
 
 	@Override
@@ -74,7 +59,7 @@ public class Ping extends GuildCommand {
 
 	@Override
 	public String getUsage() {
-		return Global.prefix + "ping [" + Argument.argumentPrefix + "all]";
+		return Global.prefix + getCommandName()+" [" + Argument.argumentPrefix + "all]";
 	}
 
 	@Override
@@ -89,6 +74,11 @@ public class Ping extends GuildCommand {
 		args.put("all", new Argument("all").setPrefixRequirement(true));
 
 		return args;
+	}
+
+	@Override
+	public String getHelp() {
+		return "Returns the jda heartbeat ping";
 	}
 
 }
