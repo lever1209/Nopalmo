@@ -131,7 +131,7 @@ public class GuildCommandManager extends CommandManager {
 							if (argSkipCount <= 0) {
 								if (guildCommand.getArguments() != null) {
 
-									if (positionalArgs.get(i) == null) {
+									// if (positionalArgs.get(i) == null) {
 
 										if (x.startsWith(Argument.argumentPrefix)) {
 
@@ -163,27 +163,24 @@ public class GuildCommandManager extends CommandManager {
 													}
 												}
 											} else {
-												Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
-												remainsValid = false;
+												if (positionalArgs.get(i).getIsWildcard()) {
+													argumentList.put(positionalArgs.get(i).getArgName(),
+															positionalArgs.get(i).setWildCardString(x));
+												} else {
+													Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
+													remainsValid = false;
+												}
+												if (positionalArgs.get(i).isAutoStartRunnable()
+														&& positionalArgs.get(i).getRunnableArg() != null) {
+													positionalArgs.get(i).getRunnableArg()
+															.run(new CommandBlob(commandBlob));
+												}
 											}
 										}
-									} else {
-										if (guildCommand.getArguments().get(x) == null) {
-											if (positionalArgs.get(i).getIsWildcard()) {
-												argumentList.put(positionalArgs.get(i).getArgName(),
-														positionalArgs.get(i).setWildCardString(x));
-											}
-											if (positionalArgs.get(i).isAutoStartRunnable()
-													&& positionalArgs.get(i).getRunnableArg() != null) {
-												positionalArgs.get(i).getRunnableArg()
-														.run(new CommandBlob(commandBlob));
-											}
-										} else {
-											
-											// argumentList.put(x, guildCommand.getArguments().get(x));
-											// i--;
-										}
-									}
+									// }
+								} else {
+									Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
+									remainsValid = false;
 								}
 							}
 						}

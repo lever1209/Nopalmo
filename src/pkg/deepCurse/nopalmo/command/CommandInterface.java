@@ -39,6 +39,7 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 	public default String getUsage() {
 		return Global.prefix + getCommandName();
 	}
+
 	public default int getTimeout() {
 		return 0;
 	}
@@ -79,6 +80,10 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 		public default Permission getRequiredPermission() {
 			return null;
 		}
+	}
+
+	public default String getCompleteUsage() {
+		return Global.prefix + getCommandName();
 	}
 
 }

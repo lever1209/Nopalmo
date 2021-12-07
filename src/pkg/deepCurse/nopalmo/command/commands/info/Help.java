@@ -24,7 +24,7 @@ public class Help implements GuildCommandInterface {
 	@Override
 	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
-		if (argumentMap.isEmpty()) {
+		if (argumentMap.isEmpty() || argumentMap.get("dev") != null) {
 			EmbedBuilder embed = new EmbedBuilder().setTitle("Commands:");
 
 			HashMap<HelpPage, List<String>> commandHash = new HashMap<HelpPage, List<String>>();
@@ -40,7 +40,10 @@ public class Help implements GuildCommandInterface {
 			}
 
 			for (HelpPage i : HelpPage.values()) {
-				if (commandHash.get(i) != null) {
+				if ((i == HelpPage.DEV || i == HelpPage.TESTING || i == HelpPage.EGG)
+						&& argumentMap.get("dev") == null) {
+
+				} else if (commandHash.get(i) != null) {
 
 					StringBuilder sB = new StringBuilder();
 
@@ -56,6 +59,7 @@ public class Help implements GuildCommandInterface {
 					embed.addField(i.toString(), sB.toString(), true);
 
 				}
+
 			}
 
 			StringBuilder sB = new StringBuilder();
@@ -92,8 +96,52 @@ public class Help implements GuildCommandInterface {
 			blob.getEvent().getChannel().sendMessageEmbeds(embed.build()).queue();
 
 			return;
-		} else {
+		} else if (argumentMap.get("commandName") != null) {
 
+			GuildCommandInterface command = manager.getCommand(argumentMap.get("commandName").getWildCardString());
+
+			if (command.getHelpPage() != HelpPage.EGG) {
+				EmbedBuilder eB = new EmbedBuilder();
+				eB.setTitle("Help results for: " + command.getCommandName());
+				if (command.getHelp() != null) {
+					eB.addField("Help info:", command.getHelp(), false);
+				}
+				eB.addField("Usage:", command.getUsage(), false);
+				eB.setFooter("Page: " + command.getHelpPage().toString());
+				String alias = "`";
+				for (int i = 1; i < command.getCommandCalls().length; i++) {
+
+					if (i == 1) {
+						alias += command.getCommandCalls()[i];
+					} else {
+						alias += ", " + command.getCommandCalls()[i];
+					}
+				}
+				alias += "`";
+
+				String endAilias = "";
+
+				if (!alias.contentEquals("``")) {
+					endAilias = "Aliases: " + alias + "\n";
+				} else {
+					endAilias = "Aliases: none\n";
+				}
+				eB.setColor(0);
+				StringBuilder sB = new StringBuilder();
+				sB.append(endAilias);
+				try {
+					sB.append("Required Permission: " + command.getRequiredPermission().getName() + "\n");
+				} catch (NullPointerException e) {
+				}
+				if (command.getTimeout() > 0) {
+					sB.append("Usage Timeout: " + command.getTimeout() + "\n");
+				}
+				sB.append("Premium: " + command.isPremium() + "\n");
+				eB.addField("Misc", sB.toString(), false);
+				blob.getEvent().getChannel().sendMessageEmbeds(eB.build()).queue();
+			} else {
+				throw new NullPointerException("Invalid input");
+			}
 		}
 
 		// ##########################################################################################################################
@@ -105,64 +153,6 @@ public class Help implements GuildCommandInterface {
 		// ##########################################################################################################################
 
 		// ##########################################################################################################################
-//		try {
-//			GuildCommandInterface command = manager.getCommand(String.join("", blob.getArgs()));
-//
-//			// event.getChannel().sendMessage("Command help for `" + command.commandName() +
-//			// "`:\n\tUsage: "+ command.usageString() + "\n" +
-//			// command.helpString()).queue();
-//			if (command.getHelpPage() != HelpPage.EGG) {
-//				EmbedBuilder eB = new EmbedBuilder();
-//				eB.setTitle("Help results for: " + command.getCommandName());
-//				if (command.getHelp() != null) {
-//					eB.addField("Help info:", command.getHelp(), false);
-//				}
-//				eB.addField("Usage:", command.getUsage(), false);
-//				eB.setFooter("Page: " + command.getHelpPage().toString());
-//				String alias = "`";
-//				for (int i = 1; i < command.getCommandCalls().length; i++) {
-//
-//					if (i == 1) {
-//						alias += command.getCommandCalls()[i];
-//					} else {
-//						alias += ", " + command.getCommandCalls()[i];
-//					}
-//				}
-//				alias += "`";
-//
-//				String endAilias = "";
-//
-//				if (!alias.contentEquals("``")) {
-//					endAilias = "Aliases: " + alias + "\n";
-//				} else {
-//					endAilias = "Aliases: none\n";
-//				}
-//				eB.setColor(0);
-//				StringBuilder sB = new StringBuilder();
-//				sB.append(endAilias);
-//				try {
-//					sB.append("Required Permission: " + command.getRequiredPermission().getName() + "\n");
-//				} catch (NullPointerException e) {
-//				}
-//				if (command.getTimeout() > 0) {
-//					sB.append("Usage Timeout: " + command.getTimeout() + "\n");
-//				}
-//				sB.append("Premium: " + command.isPremium() + "\n");
-//				eB.addField("Misc", sB.toString(), false);
-//				blob.getEvent().getChannel().sendMessageEmbeds(eB.build()).queue();
-//			} else {
-//				throw new NullPointerException("Invalid input");
-//			}
-//
-//		} catch (java.lang.NullPointerException e) {
-//			e.printStackTrace();
-//			blob.getEvent().getChannel()
-//					.sendMessage("The command `" + String.join("", blob.getArgs()) + "` does not exist!\n" + "Use `"
-//							+ Global.prefix + getCommandCalls()[0] + "` for a list of all my commands!")
-//					.queue();
-//			return;
-//
-//		}
 
 		// }
 		// https://download.java.net/java/GA/jdk16/7863447f0ab643c585b9bdebf67c69db/36/GPL/openjdk-16_linux-x64_bin.tar.gz
@@ -188,6 +178,11 @@ public class Help implements GuildCommandInterface {
 	@Override
 	public String getUsage() {
 		return Global.prefix + getCommandCalls()[0] + " [Command name]";
+	}
+	
+	@Override
+	public String getCompleteUsage() {
+		return Global.prefix + getCommandCalls()[0] + " [Command name | -dev]";
 	}
 
 	@Override
