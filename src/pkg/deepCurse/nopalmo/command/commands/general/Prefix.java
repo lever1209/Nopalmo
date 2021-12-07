@@ -27,6 +27,7 @@ public class Prefix implements GuildCommandInterface {
 			Guild.Prefix.setPrefix(
 					blob.getEvent().getGuild().getIdLong(), argumentList.get("prefix").getWildCardString());
 			blob.getEvent().getChannel().sendMessage("Set prefix to " + argumentList.get("prefix").getWildCardString()).queue();
+			blob.getChannel().sendMessage("Remember: you can always ping me to use any command in case you forget the prefix").queue();
 		} else {
 			Guild.Prefix.setPrefix(
 					blob.getEvent().getGuild().getIdLong(), Global.prefix);

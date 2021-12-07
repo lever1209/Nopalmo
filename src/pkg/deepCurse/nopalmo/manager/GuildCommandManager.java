@@ -2,6 +2,7 @@ package pkg.deepCurse.nopalmo.manager;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -114,6 +115,9 @@ public class GuildCommandManager extends CommandManager {
 						}
 					}
 
+					List<String> newArgs = new ArrayList<String>();
+
+					int offset = 0;
 					for (int i = 0; i < args.size(); i++) {
 						String x = args.get(i);
 						x = x.toLowerCase();
@@ -128,62 +132,90 @@ public class GuildCommandManager extends CommandManager {
 							guildMessageEvent.getMessage().delete().queue();
 							break;
 						default:
-							if (argSkipCount <= 0) {
-								if (guildCommand.getArguments() != null) {
+							newArgs.add(x);
+							break;
+						}
+					}
+					// split up so global commands are actually global, and will not be affected by
+					// neighboring local args
+					for (int i = 0; i < newArgs.size(); i++) {
+						String x = newArgs.get(i);
+						x = x.toLowerCase();
+						if (argSkipCount <= 0) {
+							if (guildCommand.getArguments() != null) {
 
-									// if (positionalArgs.get(i) == null) {
+								if (x.startsWith(Argument.argumentPrefix)) {
 
-										if (x.startsWith(Argument.argumentPrefix)) {
-
-											String pre = x.substring(Argument.argumentPrefix.length());
-											if (guildCommand.getArguments().keySet().contains(pre)) {
-												argumentList.put(pre, guildCommand.getArguments().get(pre));
-												if (guildCommand.getArguments().get(pre).isAutoStartRunnable()
-														&& guildCommand.getArguments().get(pre)
-																.getRunnableArg() != null) {
-													guildCommand.getArguments().get(pre).getRunnableArg()
-															.run(new CommandBlob(commandBlob));
-												}
-											} else {
-												Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
-												remainsValid = false;
+									String pre = x.substring(Argument.argumentPrefix.length());
+									if (guildCommand.getArguments().keySet().contains(pre)) {
+										offset++;
+										if (guildCommand.getArguments().get(pre).getPermission() == null
+												|| DatabaseTools.Tools.Developers.hasPermission(commandBlob.getUserID(),
+														guildCommand.getArguments().get(pre).getPermission())) {
+											argumentList.put(pre, guildCommand.getArguments().get(pre));
+											if (guildCommand.getArguments().get(pre).isAutoStartRunnable()
+													&& guildCommand.getArguments().get(pre).getRunnableArg() != null) {
+												guildCommand.getArguments().get(pre).getRunnableArg()
+														.run(new CommandBlob(commandBlob));
 											}
 										} else {
-											if (guildCommand.getArguments().get(x) != null) {
-												if (guildCommand.getArguments().get(x).getPrefixRequirement()) {
+											Tools.invalidPermissions(guildMessageEvent.getChannel(), guildCommand);
+											remainsValid = false;
+										}
+
+									} else {
+										Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
+										remainsValid = false;
+									}
+								} else {
+									if (guildCommand.getArguments().get(x) != null) {
+										if (guildCommand.getArguments().get(x).getPermission() == null
+												|| DatabaseTools.Tools.Developers.hasPermission(commandBlob.getUserID(),
+														guildCommand.getArguments().get(x).getPermission())) {
+											argumentList.put(x, guildCommand.getArguments().get(x));
+											offset++;
+											if (guildCommand.getArguments().get(x).isAutoStartRunnable()
+													&& guildCommand.getArguments().get(x).getRunnableArg() != null) {
+												guildCommand.getArguments().get(x).getRunnableArg()
+														.run(new CommandBlob(commandBlob));
+											}
+										} else {
+											Tools.invalidPermissions(guildMessageEvent.getChannel(), guildCommand);
+											remainsValid = false;
+										}
+									} else {
+										if (positionalArgs.get(i - offset) != null) {
+											if (positionalArgs.get(i - offset).getPermission() == null
+													|| DatabaseTools.Tools.Developers.hasPermission(
+															commandBlob.getUserID(),
+															positionalArgs.get(i - offset).getPermission())) {
+												if (positionalArgs.get(i - offset).getIsWildcard()) {
+													argumentList.put(positionalArgs.get(i - offset).getArgName(),
+															positionalArgs.get(i - offset).setWildCardString(x));
+												} else {
 													Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
 													remainsValid = false;
-												} else {
-													argumentList.put(x, guildCommand.getArguments().get(x));
-													if (guildCommand.getArguments().get(x).isAutoStartRunnable()
-															&& guildCommand.getArguments().get(x)
-																	.getRunnableArg() != null) {
-														guildCommand.getArguments().get(x).getRunnableArg()
-																.run(new CommandBlob(commandBlob));
-													}
 												}
-											} else {
-												if (positionalArgs.get(i).getIsWildcard()) {
-													argumentList.put(positionalArgs.get(i).getArgName(),
-															positionalArgs.get(i).setWildCardString(x));
-												} else {
-													Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
-													remainsValid = false;
-												}
-												if (positionalArgs.get(i).isAutoStartRunnable()
-														&& positionalArgs.get(i).getRunnableArg() != null) {
-													positionalArgs.get(i).getRunnableArg()
+												if (positionalArgs.get(i - offset).isAutoStartRunnable()
+														&& positionalArgs.get(i - offset).getRunnableArg() != null) {
+													positionalArgs.get(i - offset).getRunnableArg()
 															.run(new CommandBlob(commandBlob));
 												}
+											} else {
+												Tools.invalidPermissions(guildMessageEvent.getChannel(), guildCommand);
+												remainsValid = false;
 											}
-										}
-									// }
-								} else {
-									Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
-									remainsValid = false;
+										} else
+											guildMessageEvent.getChannel().sendMessage("pos is null").queue();
+									}
 								}
+
+							} else {
+								Tools.wrongUsage(guildMessageEvent.getChannel(), guildCommand);
+								remainsValid = false;
 							}
 						}
+
 					}
 
 					commandBlob.setCommandManager(this);

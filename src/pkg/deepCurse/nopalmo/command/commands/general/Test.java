@@ -22,7 +22,7 @@ public class Test implements GuildCommandInterface {
 	public String getHelp() {
 		return "A command used to test various things";
 	}
-
+	
 	@Override
 	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
 		blob.getEvent().getChannel().sendMessage("Tested").queue();

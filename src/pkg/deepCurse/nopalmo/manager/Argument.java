@@ -27,6 +27,7 @@ public class Argument {
 	private boolean autoStartRunnable = false;
 	private boolean skipOriginalTaskOnRunnable = false;
 	private RunnableArg runnableArg = null;
+	private String permissionLevel;
 	
 	public static final String argumentPrefix = "-"; // This exists for the sole reason of customization and will
 														// generally not change, ever, its recommended you keep it to
@@ -181,6 +182,15 @@ public class Argument {
 
 	public RunnableArg getRunnableArg() {
 		return runnableArg;
+	}
+
+	public Argument setPermissionLevel(String string) {
+		this.permissionLevel = string;
+		return this;
+	}
+	
+	public String getPermission() {
+		return this.permissionLevel;
 	}
 
 }

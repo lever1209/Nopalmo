@@ -28,7 +28,7 @@ public class LogHelper {
 
 	public static void crash(Exception e) {
 		e.printStackTrace();
-		System.exit(69420);
+		System.exit(8);
 	}
 
 	public static void guildCommandManager(String text) {

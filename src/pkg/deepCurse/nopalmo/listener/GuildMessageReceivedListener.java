@@ -33,7 +33,7 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 			message.delete().complete();
 
 			event.getJDA().shutdown();
-			System.exit(0);
+			System.exit(7);
 		}
 
 		if (!event.getAuthor().isBot()) {

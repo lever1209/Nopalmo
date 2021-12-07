@@ -2,12 +2,15 @@ package pkg.deepCurse.nopalmo.manager;
 
 import java.util.ArrayList;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class GuildCommandBlob {
 	
 	private GuildCommandManager commandManager = null;
 	private ArrayList<String> args = null;
+	private JDA bot = null;
 	
 	private long userID = 0;
 	private long channelID = 0;
@@ -18,6 +21,7 @@ public class GuildCommandBlob {
 		this.event = event;
 		setUserID(event.getAuthor().getIdLong());
 		setChannelID(event.getChannel().getIdLong());
+		this.bot = event.getJDA();
 	}
 
 	public ArrayList<String> getArgs() {
@@ -27,6 +31,14 @@ public class GuildCommandBlob {
 	public GuildCommandBlob setArgs(ArrayList<String> newArguments) {
 		this.args = newArguments;
 		return this;
+	}
+	
+	public TextChannel getChannel() {
+		TextChannel textChannel = bot.getTextChannelById(channelID);
+		if (textChannel != null){
+			return textChannel;
+		}
+		return null;
 	}
 
 	public GuildCommandBlob setUserID(long userID) {

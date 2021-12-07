@@ -29,7 +29,7 @@ public class DirectMessageReceivedListener extends ListenerAdapter {
 			// TODO re enable
 
 			event.getJDA().shutdown();
-			System.exit(0);
+			System.exit(7);
 		}
 
 		String[] prefixArray = new String[] { Global.prefix, "<@! " + event.getJDA().getSelfUser().getIdLong() + ">" };

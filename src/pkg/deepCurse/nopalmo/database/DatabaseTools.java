@@ -126,8 +126,7 @@ public class DatabaseTools {
 					}
 				}
 
-				public static String setPrefix(long guildID, String prefix)
-						throws IllegalArgumentException {
+				public static String setPrefix(long guildID, String prefix) throws IllegalArgumentException {
 
 					if (prefix.isEmpty()) {
 						throw new IllegalArgumentException("Input cannot be empty");
@@ -163,7 +162,7 @@ public class DatabaseTools {
 
 		public class Developers {
 
-			public static boolean canPowerOffBot(long userID) {
+			public static boolean getDeveloperBoolean(long userID, String key) {
 				Statement st = null;
 				ResultSet rs = null;
 				String query = "select * from developers where userid = " + userID;
@@ -171,7 +170,7 @@ public class DatabaseTools {
 					st = connection.createStatement();
 					rs = st.executeQuery(query);
 					if (rs.next()) {
-						return rs.getBoolean("canpoweroffbot");
+						return rs.getBoolean(key);
 					} else {
 						// throw new SQLException(null, null, 33); // we need a real catcher here
 						System.err
@@ -199,6 +198,56 @@ public class DatabaseTools {
 					// try { if (conn != null) conn.close(); } catch (Exception e) {};
 				}
 				// return null;
+			}
+			
+			public static String getDeveloperString(long userID, String key) {
+				Statement st = null;
+				ResultSet rs = null;
+				String query = "select * from developers where userid = " + userID;
+				try {
+					st = connection.createStatement();
+					rs = st.executeQuery(query);
+					if (rs.next()) {
+						return rs.getString(key);
+					} else {
+						// throw new SQLException(null, null, 33); // we need a real catcher here
+						System.err
+								.println("Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
+						return null;
+					}
+
+				} catch (SQLException e) {
+					SQLCode.getMessage(query, e.getErrorCode());
+					// System.out.println("eeeeee");
+					return null;
+				} finally {
+					try {
+						if (rs != null)
+							rs.close();
+					} catch (Exception e) {
+					}
+
+					try {
+						if (st != null)
+							st.close();
+					} catch (Exception e) {
+					}
+
+					// try { if (conn != null) conn.close(); } catch (Exception e) {};
+				}
+				// return null;
+			}
+			
+			public static boolean canPowerOffBot(long userID) {
+				return getDeveloperBoolean(userID, "canPowerOffBot");
+			}
+
+			public static boolean canUseInformationCommands(long userID) {
+				return getDeveloperBoolean(userID, "canuseinformationcommands");
+			}
+
+			public static boolean hasPermission(long userID, String permission) {
+				return getDeveloperBoolean(userID, permission);
 			}
 
 		}
