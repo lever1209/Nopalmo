@@ -6,13 +6,13 @@ import org.jetbrains.annotations.Nullable;
 
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.manager.Argument;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
+import pkg.deepCurse.nopalmo.manager.CommandBlob;
 
 public class Test implements GuildCommandInterface {
 
 	@Override
 	public String[] getCommandCalls() {
-		return new String[] {"test"};
+		return new String[] { "test" };
 	}
 
 	@Override
@@ -24,20 +24,20 @@ public class Test implements GuildCommandInterface {
 	public String getHelp() {
 		return "A command used to test various things";
 	}
-	
+
 	@Override
 	public boolean isNSFW() {
 		return true;
 	}
-	
+
 	@Override
 	public int getPremiumLevel() {
 		return 1;
 	}
-	
+
 	@Override
-	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
-		blob.getEvent().getChannel().sendMessage("Tested").queue();
+	public void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
+		blob.getChannel().sendMessage("Tested").queue();
 	}
 
 	@Override

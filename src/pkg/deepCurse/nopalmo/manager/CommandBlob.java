@@ -3,117 +3,164 @@ package pkg.deepCurse.nopalmo.manager;
 import java.util.ArrayList;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class CommandBlob {
 
-	// CONTAINER/TRANSLATOR CLASS FOR COMMAND BLOBS
+	private CommandManager commandManager = null;
+	private ArrayList<Argument> args = null;
+
+	private long authorID = 0;
+	private long channelID = 0;
+	private long guildID = 0;
+	private long messageID = 0;
 
 	private Event event = null;
-	private CommandManager commandManager = null;
-	private ArrayList<String> args = null;
 	private JDA bot = null;
+	private MessageChannel channel = null;
+	private User author = null;
+	private Guild guild = null;
+	private Member member = null;
+	private Message message = null;
 
-	private long userID = 0;
-	private long channelID = 0;
+	private boolean isWebhookMessage = false;
+	private boolean isFromGuild = false;
 
-	public CommandBlob(GuildMessageReceivedEvent event) {
+	public CommandBlob(MessageReceivedEvent event, CommandManager commandManager) {
 		this.event = event;
 		this.bot = event.getJDA();
+		this.commandManager = commandManager;
+
+		this.author = event.getAuthor();
+		this.authorID = this.author.getIdLong();
+		this.channel = event.getChannel();
+		this.channelID = this.channel.getIdLong();
+		this.message = event.getMessage();
+		this.messageID = event.getMessageIdLong();
+		this.isFromGuild = event.isFromGuild();
+		if (this.isFromGuild) {
+			this.guild = event.getGuild();
+			this.guildID = this.guild.getIdLong();
+			this.member = event.getMember();
+			this.isWebhookMessage = event.isWebhookMessage();
+		}
 	}
 
-	public CommandBlob(MessageReceivedEvent event) {
-		this.event = event;
-		this.bot = event.getJDA();
+	public CommandManager getCommandManager() {
+		return commandManager;
 	}
 
-	public CommandBlob(GuildCommandBlob blob) {
-		this.args = blob.getArgs();
-		this.channelID = blob.getChannelID();
-		this.commandManager = blob.getCommandManager();
-		this.event = blob.getEvent();
-		this.userID = blob.getUserID();
-		this.bot = blob.getEvent().getJDA();
+	public void setCommandManager(CommandManager commandManager) {
+		this.commandManager = commandManager;
 	}
 
-	public CommandBlob(DirectCommandBlob blob) {
-		this.args = blob.getArgs();
-		this.channelID = blob.getChannelID();
-		this.commandManager = blob.getCommandManager();
-		this.event = blob.getEvent();
-		this.userID = blob.getUserID();
-		this.bot = blob.getEvent().getJDA();
+	public ArrayList<Argument> getArgs() {
+		return args;
+	}
+
+	public void setArgs(ArrayList<Argument> args) {
+		this.args = args;
+	}
+
+	public long getAuthorID() {
+		return authorID;
+	}
+
+	public void setAuthorID(long authorID) {
+		this.authorID = authorID;
 	}
 
 	public long getChannelID() {
 		return channelID;
 	}
 
-	public CommandBlob setChannelID(long channelID) {
+	public void setChannelID(long channelID) {
 		this.channelID = channelID;
-		return this;
 	}
 
-	public MessageChannel getChannel() {
-		TextChannel textChannel = bot.getTextChannelById(channelID);
-		if (textChannel != null){
-			return textChannel;
-		}
-		PrivateChannel privateChannel = bot.getPrivateChannelById(channelID);
-		if (privateChannel != null){
-			return privateChannel;
-		}
-		return null;
+	public long getGuildID() {
+		return guildID;
 	}
 
-	public MessageChannel getMessageChannel(long channelID) {
-		return bot.getTextChannelById(channelID);
+	public void setGuildID(long guildID) {
+		this.guildID = guildID;
 	}
 
-	public long getUserID() {
-		return userID;
+	public long getMessageID() {
+		return messageID;
+	}
+
+	public void setMessageID(long messageID) {
+		this.messageID = messageID;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 
 	public JDA getJDA() {
 		return bot;
 	}
 
-	public CommandBlob setUserID(long userID) {
-		this.userID = userID;
-		return this;
+	public void setBot(JDA bot) {
+		this.bot = bot;
 	}
 
-	public ArrayList<String> getArgs() {
-		return args;
+	public MessageChannel getChannel() {
+		return channel;
 	}
 
-	public CommandBlob setArgs(ArrayList<String> args) {
-		this.args = args;
-		return this;
+	public void setChannel(MessageChannel messageChannel) {
+		this.channel = messageChannel;
 	}
 
-	public CommandManager getCommandManager() {
-		return commandManager;
-
+	public User getAuthor() {
+		return author;
 	}
 
-	public CommandBlob setCommandManager(CommandManager commandManager) {
-		this.commandManager = commandManager;
-		return this;
+	public void setAuthor(User author) {
+		this.author = author;
 	}
 
-	public Event getEvent() {
-		if (event instanceof GuildMessageReceivedEvent) {
-			return (GuildMessageReceivedEvent) event;
-		} else if (event instanceof MessageReceivedEvent) {
-			return (MessageReceivedEvent) event;
-		} else
-			return null;
+	public Member getMember() {
+		return member;
 	}
 
+	public void setMember(Member member) {
+		this.member = member;
+	}
+
+	public Message getMessage() {
+		return message;
+	}
+
+	public void setMessage(Message message) {
+		this.message = message;
+	}
+
+	public boolean isWebhookMessage() {
+		return isWebhookMessage;
+	}
+
+	public void setWebhookMessage(boolean isWebhookMessage) {
+		this.isWebhookMessage = isWebhookMessage;
+	}
+
+	public boolean isFromGuild() {
+		return isFromGuild;
+	}
+
+	public void setFromGuild(boolean isFromGuild) {
+		this.isFromGuild = isFromGuild;
+	}
 }

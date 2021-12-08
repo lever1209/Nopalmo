@@ -28,9 +28,11 @@ public class Git implements DualCommandInterface {
 		HashMap<String, Argument> args = new HashMap<String, Argument>();
 
 		args.put("test", new Argument("test", (CommandBlob blob) -> {
-			
-			blob.getChannel().sendMessage("This is the automatically running argument inside of " + this.getCommandName()).queue();
-			
+
+			blob.getChannel()
+					.sendMessage("This is the automatically running argument inside of " + this.getCommandName())
+					.queue();
+
 		}).setPrefixRequirement(true).setAutoStartRunnable(true).setDeveloper(true));
 
 		return args;
@@ -40,5 +42,5 @@ public class Git implements DualCommandInterface {
 	public String getHelp() {
 		return "Posts my github link";
 	}
-	
+
 }

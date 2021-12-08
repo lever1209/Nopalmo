@@ -14,11 +14,8 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.global.Reactions;
-import pkg.deepCurse.nopalmo.listener.DirectMessageReceivedListener;
-import pkg.deepCurse.nopalmo.listener.GuildMessageReceivedListener;
+import pkg.deepCurse.nopalmo.listener.MessageReceivedListener;
 import pkg.deepCurse.nopalmo.manager.CommandManager;
-import pkg.deepCurse.nopalmo.manager.DirectCommandManager;
-import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 import pkg.deepCurse.nopalmo.manager.StatusManager;
 import pkg.deepCurse.nopalmo.utils.Locks;
 import pkg.deepCurse.nopalmo.utils.LogHelper;
@@ -116,8 +113,9 @@ public class Boot {
 
 					.setAutoReconnect(true)
 
-					.addEventListeners(new GuildMessageReceivedListener())
-					.addEventListeners(new DirectMessageReceivedListener())
+//					.addEventListeners(new GuildMessageReceivedListener())
+//					.addEventListeners(new DirectMessageReceivedListener())
+					.addEventListeners(new MessageReceivedListener())
 
 					.setEnableShutdownHook(true)
 

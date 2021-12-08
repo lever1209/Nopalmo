@@ -6,12 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.TextChannel;
 import pkg.deepCurse.nopalmo.command.CommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
+import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import pkg.deepCurse.nopalmo.manager.CommandManager;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 
 public class Help implements GuildCommandInterface {
 
@@ -22,7 +23,7 @@ public class Help implements GuildCommandInterface {
 	}
 
 	@Override
-	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+	public void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
 		boolean isDevEnabled = argumentMap.get("dev") != null;
 
@@ -36,7 +37,7 @@ public class Help implements GuildCommandInterface {
 
 			HashMap<HelpPage, List<String>> commandHash = new HashMap<HelpPage, List<String>>();
 
-			for (GuildCommandInterface command : manager.getGuildCommands()) {
+			for (CommandInterface command : manager.getCommands()) {
 				List<String> commandNameList = commandHash.get(command.getHelpPage());
 				if (commandNameList == null) {
 					commandNameList = new ArrayList<String>();
@@ -70,25 +71,24 @@ public class Help implements GuildCommandInterface {
 
 			StringBuilder sB = new StringBuilder();
 
-			CommandInterface ping = blob.getCommandManager().getDirectCommand("ping");
+			CommandInterface ping = blob.getCommandManager().getCommand("ping");
 			if (ping != null) {
 				sB.append("`" + ping.getUsage(isDevEnabled) + "`\n");
 			}
 
-			CommandInterface info = blob.getCommandManager().getDirectCommand("info");
+			CommandInterface info = blob.getCommandManager().getCommand("info");
 			if (info != null) {
 				sB.append("`" + info.getUsage(isDevEnabled) + "`\n");
 			}
 
-			CommandInterface prefix = blob.getCommandManager().getDirectCommand("prefix");
+			CommandInterface prefix = blob.getCommandManager().getCommand("prefix");
 			if (prefix != null) {
 				sB.append("`" + prefix.getUsage(isDevEnabled) + "`\n");
 			}
 
 			embed.addField("Information:", "Commands to take note of:\n" + sB, false);
 
-			embed.setFooter(blob.getEvent().getMember().getEffectiveName(),
-					blob.getEvent().getMember().getUser().getEffectiveAvatarUrl());
+			embed.setFooter(blob.getMember().getEffectiveName(), blob.getAuthor().getEffectiveAvatarUrl());
 			embed.setTimestamp(Instant.now());
 			embed.setColor(Global.getEmbedColor());
 
@@ -97,11 +97,11 @@ public class Help implements GuildCommandInterface {
 			return;
 		} else if (argumentMap.get("commandName") != null) {
 
-			GuildCommandInterface command = manager.getGuildCommand(argumentMap.get("commandName").getWildCardString());
+			CommandInterface command = manager.getCommand(argumentMap.get("commandName").getWildCardString());
 
 			if (command != null && ((deniedPages.contains(command.getHelpPage()) && isDevEnabled)
 					|| !deniedPages.contains(command.getHelpPage()))) {
-				if (!(command.isNSFW() && !blob.getChannel().isNSFW())) {
+				if (!blob.isFromGuild() ? true : !(command.isNSFW() && !((TextChannel) blob.getChannel()).isNSFW())) {
 					EmbedBuilder eB = new EmbedBuilder();
 
 					eB.setColor(Global.getEmbedColor());
@@ -118,10 +118,9 @@ public class Help implements GuildCommandInterface {
 
 					eB.addField("Page:", command.getHelpPage().toString(), true); // ("Page: " +
 																					// command.getHelpPage().toString());
-					eB.setFooter(blob.getEvent().getMember().getEffectiveName(),
-							blob.getEvent().getMember().getUser().getEffectiveAvatarUrl());
+					eB.setFooter(blob.getMember().getEffectiveName(), blob.getAuthor().getEffectiveAvatarUrl());
 					eB.setTimestamp(Instant.now());
-					
+
 					if (command.getCommandCalls().length > 1) {
 						sB.append("Aliases: ");
 						for (int i = 1; i < command.getCommandCalls().length; i++) {
@@ -134,9 +133,9 @@ public class Help implements GuildCommandInterface {
 						sB.append("Is nsfw: " + command.isNSFW() + "\n");
 					}
 
-					if (command.getRequiredPermission() != null) {
-						sB.append("Required Permission: " + command.getRequiredPermission().getName() + "\n");
-					}
+//					if (command.getRequiredPermission() != null) {
+//						sB.append("Required Permission: " + command.getRequiredPermission().getName() + "\n");
+//					}
 
 					if (command.getTimeout() > 0) {
 						sB.append("Usage Timeout: " + command.getTimeout() + "\n");

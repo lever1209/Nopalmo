@@ -14,7 +14,7 @@ public class Ping implements DualCommandInterface {
 	public void runDualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
 		MessageChannel channel = blob.getChannel();
-		
+
 		if (argumentMap.isEmpty()) {
 			channel.sendMessage("Pong!\n" + blob.getJDA().getGatewayPing() + "ms\n").queue();
 			return;
@@ -43,7 +43,7 @@ public class Ping implements DualCommandInterface {
 						+ (googlePing > 0 ? "Google: " + googlePing + "ms\n" : "Could not connect to www.google.com\n")
 						+ (discordPing > 0 ? "Discord: " + discordPing + "ms\n"
 								: "Could not connect to www.discord.com\n")
-						+ "JDA-Discord heartbeat: "+jdaPing+"ms";
+						+ "JDA-Discord heartbeat: " + jdaPing + "ms";
 
 				msg.editMessage(out + "\nTime to process: " + (System.currentTimeMillis() - timeToProcess) + "ms")
 						.queue();

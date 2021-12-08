@@ -4,15 +4,13 @@ import java.util.HashMap;
 
 import org.jetbrains.annotations.Nullable;
 
-import pkg.deepCurse.nopalmo.command.CommandInterface.DirectCommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
+import pkg.deepCurse.nopalmo.command.CommandInterface.PrivateCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Users;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
-import pkg.deepCurse.nopalmo.manager.DirectCommandBlob;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 
-public class Info implements GuildCommandInterface, DirectCommandInterface {
+public class Info implements GuildCommandInterface, PrivateCommandInterface {
 
 	@Override
 	public String[] getCommandCalls() {
@@ -34,19 +32,18 @@ public class Info implements GuildCommandInterface, DirectCommandInterface {
 		HashMap<String, Argument> args = new HashMap<String, Argument>();
 
 		args.put("userdump", new Argument("userdump", (CommandBlob blob) -> {
-			blob.getChannel().sendMessage(Users.dump(blob.getUserID())).queue();
-		}).setPrefixRequirement(true).setAutoStartRunnable(true)
-				.setSkipOriginalTaskOnRunnable(true));
+			blob.getChannel().sendMessage(Users.dump(blob.getAuthorID())).queue();
+		}).setPrefixRequirement(true).setAutoStartRunnable(true).setSkipOriginalTaskOnRunnable(true));
 
 		return args;
 	}
 
 	@Override
-	public void runDirectCommand(DirectCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
+	public void runDirectCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
 	}
 
 	@Override
-	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
+	public void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
 		blob.getChannel().sendMessage("EEE").queue();
 	}
 }

@@ -30,7 +30,7 @@ public class Argument {
 	private String permissionLevel = null;
 	private boolean isRequired = false;
 	private boolean isDeveloper = false;
-	
+
 	public static final String argumentPrefix = "-"; // This exists for the sole reason of customization and will
 														// generally not change, ever, its recommended you keep it to
 														// something other than empty to help ensure that what the user
@@ -121,17 +121,17 @@ public class Argument {
 		this.requiresPrefix = bool;
 		return this;
 	}
-	
+
 	public Argument setIsWildcard(Boolean bool) {
-		
-		if (this.position<=-1) {
+
+		if (this.position <= -1) {
 			throw new IllegalArgumentException("Cannot create a wildcard without a position; set a position first");
 		}
-		
+
 		this.isWildcard = bool;
 		return this;
 	}
-	
+
 	public Boolean getIsWildcard() {
 		return isWildcard;
 	}
@@ -150,7 +150,7 @@ public class Argument {
 	}
 
 	public interface RunnableArg {
-		
+
 		public void run(CommandBlob blob);
 
 	}
@@ -165,7 +165,7 @@ public class Argument {
 	}
 
 	public Argument setAutoStartRunnable(boolean bool) {
-		this.autoStartRunnable  = bool;
+		this.autoStartRunnable = bool;
 		return this;
 	}
 
@@ -191,7 +191,7 @@ public class Argument {
 		this.isDeveloper = true;
 		return this;
 	}
-	
+
 	public String getPermission() {
 		return this.permissionLevel;
 	}
@@ -199,7 +199,7 @@ public class Argument {
 	public boolean isRequired() {
 		return this.isRequired;
 	}
-	
+
 	public Argument setIsRequired(boolean bool) {
 		this.isRequired = bool;
 		return this;

@@ -7,7 +7,7 @@ import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Guild;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Users;
 import pkg.deepCurse.nopalmo.manager.Argument;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
+import pkg.deepCurse.nopalmo.manager.CommandBlob;
 
 public class Prefix implements GuildCommandInterface {
 
@@ -22,17 +22,19 @@ public class Prefix implements GuildCommandInterface {
 	}
 
 	@Override
-	public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
-		
+	public void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
+
 		if (argumentList.get("prefix") != null) {
-			Guild.Prefix.setPrefix(
-					blob.getEvent().getGuild().getIdLong(), argumentList.get("prefix").getWildCardString());
-			blob.getEvent().getChannel().sendMessage("Set prefix to " + argumentList.get("prefix").getWildCardString()).queue();
-			if (!Users.isAdvancedUser(blob.getUserID())) blob.getChannel().sendMessage("Remember: you can always ping me to use any command in case you forget the prefix").queue();
+			Guild.Prefix.setPrefix(blob.getGuildID(), argumentList.get("prefix").getWildCardString());
+			blob.getChannel().sendMessage("Set prefix to " + argumentList.get("prefix").getWildCardString()).queue();
+			if (!Users.isAdvancedUser(blob.getAuthorID()))
+				blob.getChannel()
+						.sendMessage(
+								"Remember: you can always ping me to use any command in case you forget the prefix")
+						.queue();
 		} else {
-			Guild.Prefix.setPrefix(
-					blob.getEvent().getGuild().getIdLong(), Global.prefix);
-			blob.getEvent().getChannel().sendMessage("Reset prefix to default").queue();
+			Guild.Prefix.setPrefix(blob.getGuildID(), Global.prefix);
+			blob.getChannel().sendMessage("Reset prefix to default").queue();
 		}
 
 	}

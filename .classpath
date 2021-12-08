@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="/libs/discord/JDA-4.4.0_350-withDependencies.jar" sourcepath="/libs/discord/JDA-4.4.0_350-sources.jar"/>
 	<classpathentry kind="lib" path="/libs/logging/slf4j-api-1.7.9.jar" sourcepath="/libs/logging/slf4j-api-1.7.9-sources.jar"/>
 	<classpathentry kind="lib" path="/libs/logging/slf4j-simple-1.7.9.jar" sourcepath="/libs/logging/slf4j-simple-1.7.9-sources.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Phoenix"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -8,8 +8,6 @@ import net.dv8tion.jda.api.Permission;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
-import pkg.deepCurse.nopalmo.manager.DirectCommandBlob;
-import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 
 public interface CommandInterface { // TODO rewrite to implement type args?
 
@@ -42,11 +40,11 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 		StringBuilder sB = new StringBuilder();
 		for (Argument i : getArguments().values()) {
 			if (!i.isDeveloper() || (hasPermissionInfo && i.isDeveloper())) {
-			sB.append(i.isRequired() ? "<" : "[");
-			if (i.getPrefixRequirement()) {
-				sB.append(Argument.argumentPrefix);
-			}
-			sB.append(i.getArgName() + (i.isRequired() ? "> " : "] "));
+				sB.append(i.isRequired() ? "<" : "[");
+				if (i.getPrefixRequirement()) {
+					sB.append(Argument.argumentPrefix);
+				}
+				sB.append(i.getArgName() + (i.isRequired() ? "> " : "] "));
 			}
 		}
 
@@ -60,29 +58,27 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 	@Nullable
 	public HashMap<String, Argument> getArguments();
 
-	public interface DualCommandInterface extends DirectCommandInterface, GuildCommandInterface {
+	public interface DualCommandInterface extends PrivateCommandInterface, GuildCommandInterface {
 		@Override
-		public default void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentMap)
-				throws Exception {
-			runDualCommand(new CommandBlob(blob), argumentMap);
+		public default void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+			runDualCommand(blob, argumentMap);
 		}
 
 		@Override
-		public default void runDirectCommand(DirectCommandBlob blob, HashMap<String, Argument> argumentMap)
-				throws Exception {
-			runDualCommand(new CommandBlob(blob), argumentMap);
+		public default void runDirectCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+			runDualCommand(blob, argumentMap);
 		}
 
 		public void runDualCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception;
 
 	}
 
-	public interface DirectCommandInterface extends CommandInterface {
-		public void runDirectCommand(DirectCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception;
+	public interface PrivateCommandInterface extends CommandInterface {
+		public void runDirectCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception;
 	}
 
 	public interface GuildCommandInterface extends CommandInterface {
-		public void runGuildCommand(GuildCommandBlob blob, HashMap<String, Argument> argumentList) throws Exception;
+		public void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception;
 
 		public default Permission[] getRequiredPermissions() {
 			return null;
