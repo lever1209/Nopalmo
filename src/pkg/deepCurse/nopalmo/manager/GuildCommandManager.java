@@ -64,7 +64,7 @@ public class GuildCommandManager extends CommandManager {
 		return null;
 	}
 
-	public void startCommand(GuildMessageReceivedEvent guildMessageEvent) { // TODO SPLIT UP AND INHERIT
+	public void startCommand(GuildMessageReceivedEvent guildMessageEvent) {
 
 		final String message = guildMessageEvent.getMessage().getContentRaw();
 		String prefix = DatabaseTools.Tools.Guild.Prefix.getPrefix(guildMessageEvent.getGuild().getIdLong());

@@ -1,0 +1,4 @@
+mix command managers
+finish loop
+add socket server for better management / integration
+implement pheonix in a smarter way than last time

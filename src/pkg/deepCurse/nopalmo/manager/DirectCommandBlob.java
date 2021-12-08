@@ -2,24 +2,37 @@ package pkg.deepCurse.nopalmo.manager;
 
 import java.util.ArrayList;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class DirectCommandBlob {
-	
+
 	private DirectCommandManager commandManager = null;
-	private ArrayList<String> args = null;	
+	private ArrayList<String> args = null;
 	private MessageReceivedEvent event = null;
+	private JDA bot = null;
 
 	private long userID = 0;
 	private long channelID = 0;
-	
+
 	public DirectCommandBlob(MessageReceivedEvent event) {
 		setUserID(event.getAuthor().getIdLong());
-		setChannelID(event.getChannel().getIdLong());this.event = event;
+		setChannelID(event.getChannel().getIdLong());
+		this.event = event;
+		this.bot = event.getJDA();
 	}
 
 	public ArrayList<String> getArgs() {
 		return args;
+	}
+
+	public TextChannel getChannel() {
+		TextChannel textChannel = bot.getTextChannelById(channelID);
+		if (textChannel != null) {
+			return textChannel;
+		}
+		return null;
 	}
 
 	public DirectCommandBlob setArgs(ArrayList<String> newArguments) {

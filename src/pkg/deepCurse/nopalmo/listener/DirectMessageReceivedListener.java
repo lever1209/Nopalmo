@@ -33,7 +33,6 @@ public class DirectMessageReceivedListener extends ListenerAdapter {
 		}
 
 		String[] prefixArray = new String[] { Global.prefix, "<@! " + event.getJDA().getSelfUser().getIdLong() + ">" };
-		// FIXME BROKEN PING PREFIX
 
 		boolean shouldReturn = true;
 		for (String i : prefixArray) { // TODO switch to [] to skip for loop?
