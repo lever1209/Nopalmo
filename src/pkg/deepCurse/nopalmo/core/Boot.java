@@ -16,6 +16,7 @@ import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.global.Reactions;
 import pkg.deepCurse.nopalmo.listener.DirectMessageReceivedListener;
 import pkg.deepCurse.nopalmo.listener.GuildMessageReceivedListener;
+import pkg.deepCurse.nopalmo.manager.CommandManager;
 import pkg.deepCurse.nopalmo.manager.DirectCommandManager;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 import pkg.deepCurse.nopalmo.manager.StatusManager;
@@ -26,14 +27,15 @@ public class Boot {
 
 	public static JDA bot; // TODO create sharding handler
 	public static DatabaseTools databaseTools = null;
-	public static final GuildCommandManager guildCommandManager = new GuildCommandManager(); // move to master manager
-	public static final DirectCommandManager directCommandManager = new DirectCommandManager(); // move to master
-																								// manager
+//	public static final GuildCommandManager guildCommandManager = new GuildCommandManager(); // move to master manager
+//	public static final DirectCommandManager directCommandManager = new DirectCommandManager(); // move to master
+//																								// manager
 
 	public static boolean isProd = false;
 
 	public static final long pid = ProcessHandle.current().pid();
 	public static boolean running = true;
+	public static final CommandManager commandManager = new CommandManager();
 
 	public static void main(String[] args) {
 		LogHelper.boot("Booting: <" + pid + ">");
@@ -78,9 +80,9 @@ public class Boot {
 		LogHelper.boot("Init reaction/emote list");
 		Reactions.init();
 		LogHelper.boot("Initialized reaction/emote list. . .");
-		LogHelper.boot("Init guild commands list");
-		guildCommandManager.init();
-		LogHelper.boot("Initialized guild commands list. . .");
+		LogHelper.boot("Init commands list");
+		commandManager.init();
+		LogHelper.boot("Initialized commands list. . .");
 
 		try {
 //			bot = JDABuilder.createDefault(args[0]).setChunkingFilter(ChunkingFilter.ALL)

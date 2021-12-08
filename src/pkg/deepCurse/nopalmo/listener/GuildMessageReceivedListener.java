@@ -37,7 +37,7 @@ public class GuildMessageReceivedListener extends ListenerAdapter {
 		}
 
 		if (!event.getAuthor().isBot()) {
-			Boot.guildCommandManager.startCommand(event);
+			Boot.commandManager.startCommand(event);
 		}
 	}
 }

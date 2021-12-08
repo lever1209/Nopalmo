@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
@@ -18,7 +18,7 @@ public class DirectMessageReceivedListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onMessageReceived(@Nonnull MessageReceivedEvent event) {
+	public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {
 		Message message = event.getMessage();
 		String messageRaw = message.getContentRaw();
 		
@@ -48,8 +48,8 @@ public class DirectMessageReceivedListener extends ListenerAdapter {
 			return;
 		}
 
-		if (!event.getAuthor().isBot() && !event.isFromGuild()) {
-			Boot.directCommandManager.startCommand(event);
+		if (!event.getAuthor().isBot()) {
+			Boot.commandManager.startCommand(event);
 		}
 
 	}

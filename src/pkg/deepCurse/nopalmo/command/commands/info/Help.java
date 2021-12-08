@@ -6,17 +6,18 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import pkg.deepCurse.nopalmo.command.CommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
+import pkg.deepCurse.nopalmo.manager.CommandManager;
 import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
-import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 
 public class Help implements GuildCommandInterface {
 
-	public final GuildCommandManager manager;
+	public final CommandManager manager;
 
-	public Help(GuildCommandManager m) {
+	public Help(CommandManager m) {
 		this.manager = m;
 	}
 
@@ -69,17 +70,17 @@ public class Help implements GuildCommandInterface {
 
 			StringBuilder sB = new StringBuilder();
 
-			GuildCommandInterface ping = blob.getCommandManager().getCommand("ping");
+			CommandInterface ping = blob.getCommandManager().getDirectCommand("ping");
 			if (ping != null) {
 				sB.append("`" + ping.getUsage(isDevEnabled) + "`\n");
 			}
 
-			GuildCommandInterface info = blob.getCommandManager().getCommand("info");
+			CommandInterface info = blob.getCommandManager().getDirectCommand("info");
 			if (info != null) {
 				sB.append("`" + info.getUsage(isDevEnabled) + "`\n");
 			}
 
-			GuildCommandInterface prefix = blob.getCommandManager().getCommand("prefix");
+			CommandInterface prefix = blob.getCommandManager().getDirectCommand("prefix");
 			if (prefix != null) {
 				sB.append("`" + prefix.getUsage(isDevEnabled) + "`\n");
 			}
@@ -96,7 +97,7 @@ public class Help implements GuildCommandInterface {
 			return;
 		} else if (argumentMap.get("commandName") != null) {
 
-			GuildCommandInterface command = manager.getCommand(argumentMap.get("commandName").getWildCardString());
+			GuildCommandInterface command = manager.getGuildCommand(argumentMap.get("commandName").getWildCardString());
 
 			if (command != null && ((deniedPages.contains(command.getHelpPage()) && isDevEnabled)
 					|| !deniedPages.contains(command.getHelpPage()))) {

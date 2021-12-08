@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 
 public class GuildCommandBlob {
 	
-	private GuildCommandManager commandManager = null;
+	private CommandManager commandManager = null;
 	private ArrayList<String> args = null;
 	private JDA bot = null;
 	
@@ -50,11 +50,11 @@ public class GuildCommandBlob {
 		return this.userID;
 	}
 
-	public GuildCommandManager getCommandManager() {
+	public CommandManager getCommandManager() {
 		return commandManager;
 	}
 
-	public void setCommandManager(GuildCommandManager commandManager) {
+	public void setCommandManager(CommandManager commandManager) {
 		this.commandManager = commandManager;
 	}
 

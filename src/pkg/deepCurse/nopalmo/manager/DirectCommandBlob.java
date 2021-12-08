@@ -4,19 +4,19 @@ import java.util.ArrayList;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 
 public class DirectCommandBlob {
 
-	private DirectCommandManager commandManager = null;
+	private CommandManager commandManager = null;
 	private ArrayList<String> args = null;
-	private MessageReceivedEvent event = null;
+	private PrivateMessageReceivedEvent event = null;
 	private JDA bot = null;
 
 	private long userID = 0;
 	private long channelID = 0;
 
-	public DirectCommandBlob(MessageReceivedEvent event) {
+	public DirectCommandBlob(PrivateMessageReceivedEvent event) {
 		setUserID(event.getAuthor().getIdLong());
 		setChannelID(event.getChannel().getIdLong());
 		this.event = event;
@@ -49,11 +49,11 @@ public class DirectCommandBlob {
 		return this.userID;
 	}
 
-	public DirectCommandManager getCommandManager() {
+	public CommandManager getCommandManager() {
 		return commandManager;
 	}
 
-	public void setCommandManager(DirectCommandManager commandManager) {
+	public void setCommandManager(CommandManager commandManager) {
 		this.commandManager = commandManager;
 	}
 
@@ -65,11 +65,11 @@ public class DirectCommandBlob {
 		this.channelID = channelID;
 	}
 
-	public MessageReceivedEvent getEvent() {
+	public PrivateMessageReceivedEvent getEvent() {
 		return event;
 	}
 
-	public void setEvent(MessageReceivedEvent event) {
+	public void setEvent(PrivateMessageReceivedEvent event) {
 		this.event = event;
 	}
 }
