@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -56,6 +57,89 @@ public class DatabaseTools {
 
 		// these sub classes will represent tables and the methods therein will be for
 		// actions within said table
+
+		public class Users {
+
+			public static int getPremiumLevel(long userID) {
+				Statement st = null;
+				ResultSet rs = null;
+				String query = "select * from users where userid = " + userID;
+				try {
+					st = connection.createStatement();
+					rs = st.executeQuery(query);
+					if (rs.next()) {
+						return rs.getInt("premiumlevel");
+					} else {
+						// throw new SQLException(null, null, 33); // we need a real catcher here
+						System.err
+								.println("Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
+						return 0;
+					}
+				} catch (SQLException e) {
+					SQLCode.getMessage(query, e.getErrorCode());
+					return 0;
+				} finally { // @formatter:off
+					try {if (rs != null)rs.close();} catch (Exception e) {}
+					try {if (st != null)st.close();} catch (Exception e) {}
+					// @formatter:on
+				}
+			}
+
+			public static boolean isAdvancedUser(long userID) {
+				Statement st = null;
+				ResultSet rs = null;
+				String query = "select * from users where userid = " + userID;
+				try {
+					st = connection.createStatement();
+					rs = st.executeQuery(query);
+					if (rs.next()) {
+						return rs.getBoolean("advanceduser");
+					} else {
+						// throw new SQLException(null, null, 33); // we need a real catcher here
+						System.err
+								.println("Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
+						return false;
+					}
+				} catch (SQLException e) {
+					SQLCode.getMessage(query, e.getErrorCode());
+					return false;
+				} finally { // @formatter:off
+					try {if (rs != null)rs.close();} catch (Exception e) {}
+					try {if (st != null)st.close();} catch (Exception e) {}
+					// @formatter:on
+				}
+			}
+
+			public static String dump(long userID) {
+				Statement st = null;
+				ResultSet rs = null;
+				String query = "select * from users where userid = " + userID;
+				try {
+					st = connection.createStatement();
+					rs = st.executeQuery(query);
+					ResultSetMetaData rsMeta = rs.getMetaData();
+					int columnCount = rsMeta.getColumnCount();
+					StringBuilder sB = new StringBuilder();
+					while (rs.next()) {
+						// Object[] values = new Object[columnCount];
+						for (int i = 1; i <= columnCount; i++) {
+							// values[i - 1] = resultSet.getObject(i);
+							sB.append(rsMeta.getColumnLabel(i) + ": " + rs.getString(i) + "\n");
+						}
+					}
+					return sB.toString();
+
+				} catch (SQLException e) {
+					SQLCode.getMessage(query, e.getErrorCode());
+					return null;
+				} finally { // @formatter:off
+					try {if (rs != null)rs.close();} catch (Exception e) {}
+					try {if (st != null)st.close();} catch (Exception e) {}
+					// @formatter:on
+				}
+			}
+
+		}
 
 		public class Guild {
 
@@ -199,7 +283,7 @@ public class DatabaseTools {
 				}
 				// return null;
 			}
-			
+
 			public static String getDeveloperString(long userID, String key) {
 				Statement st = null;
 				ResultSet rs = null;
@@ -237,7 +321,7 @@ public class DatabaseTools {
 				}
 				// return null;
 			}
-			
+
 			public static boolean canPowerOffBot(long userID) {
 				return getDeveloperBoolean(userID, "canPowerOffBot");
 			}
@@ -296,8 +380,114 @@ public class DatabaseTools {
 			}
 
 			public static boolean isShuffleStatusEnabled() {
-				
-				return false;
+				Statement st = null;
+				ResultSet rs = null;
+				String query = "select * from global where id = 'isshufflestatusenabled'";
+				try {
+					st = connection.createStatement();
+					rs = st.executeQuery(query);
+					if (rs.next()) {
+						return rs.getString("value").contentEquals("true");
+					} else {
+						System.err
+								.println("Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
+						return false;
+					}
+
+				} catch (SQLException e) {
+					SQLCode.getMessage(query, e.getErrorCode());
+					// System.out.println("eeeeee");
+					return false;
+				} finally {
+					try {
+						if (rs != null)
+							rs.close();
+					} catch (Exception e) {
+					}
+
+					try {
+						if (st != null)
+							st.close();
+					} catch (Exception e) {
+					}
+
+					// try { if (conn != null) conn.close(); } catch (Exception e) {};
+				}
+				// return null;
+			}
+
+			public static int getDynamicWait() {
+				Statement st = null;
+				ResultSet rs = null;
+				String query = "select * from global where id = 'dynamicwait'";
+				try {
+					st = connection.createStatement();
+					rs = st.executeQuery(query);
+					if (rs.next()) {
+						return rs.getInt("value");
+					} else {
+						System.err
+								.println("Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
+						return 45000;
+					}
+
+				} catch (SQLException e) {
+					SQLCode.getMessage(query, e.getErrorCode());
+					// System.out.println("eeeeee");
+					return 45000;
+				} finally {
+					try {
+						if (rs != null)
+							rs.close();
+					} catch (Exception e) {
+					}
+
+					try {
+						if (st != null)
+							st.close();
+					} catch (Exception e) {
+					}
+
+					// try { if (conn != null) conn.close(); } catch (Exception e) {};
+				}
+				// return null;
+			}
+
+			public static int getEmbedColor() {
+				Statement st = null;
+				ResultSet rs = null;
+				String query = "select * from global where id = 'embedcolor'";
+				try {
+					st = connection.createStatement();
+					rs = st.executeQuery(query);
+					if (rs.next()) {
+						return rs.getInt("value");
+					} else {
+						System.err
+								.println("Failed to execute; errorCode=NO_ROW_FOUND; No row found; On action " + query);
+						return 0;
+					}
+
+				} catch (SQLException e) {
+					SQLCode.getMessage(query, e.getErrorCode());
+					// System.out.println("eeeeee");
+					return 0;
+				} finally {
+					try {
+						if (rs != null)
+							rs.close();
+					} catch (Exception e) {
+					}
+
+					try {
+						if (st != null)
+							st.close();
+					} catch (Exception e) {
+					}
+
+					// try { if (conn != null) conn.close(); } catch (Exception e) {};
+				}
+				// return null;
 			}
 
 		}

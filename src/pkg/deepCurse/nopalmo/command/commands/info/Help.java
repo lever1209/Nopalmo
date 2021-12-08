@@ -8,9 +8,7 @@ import java.util.List;
 import net.dv8tion.jda.api.EmbedBuilder;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
-import pkg.deepCurse.nopalmo.global.Tools;
 import pkg.deepCurse.nopalmo.manager.Argument;
-import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
 
@@ -31,8 +29,6 @@ public class Help implements GuildCommandInterface {
 		deniedPages.add(HelpPage.DEV);
 		deniedPages.add(HelpPage.EGG);
 		deniedPages.add(HelpPage.TESTING);
-
-		// System.out.println(argumentMap.size()+":"+devEnabled+"\n"+argumentMap.toString());
 
 		if (argumentMap.isEmpty() || (isDevEnabled && argumentMap.size() == 1)) {
 			EmbedBuilder embed = new EmbedBuilder().setTitle(isDevEnabled ? "^Commands:" : "Commands:");
@@ -75,32 +71,25 @@ public class Help implements GuildCommandInterface {
 
 			GuildCommandInterface ping = blob.getCommandManager().getCommand("ping");
 			if (ping != null) {
-				sB.append("`" + ping.getUsage() + "`\n");
+				sB.append("`" + ping.getUsage(isDevEnabled) + "`\n");
 			}
 
-			GuildCommandInterface help = blob.getCommandManager().getCommand("help");
-			if (help != null) {
-				sB.append("`" + help.getUsage() + "`\n");
+			GuildCommandInterface info = blob.getCommandManager().getCommand("info");
+			if (info != null) {
+				sB.append("`" + info.getUsage(isDevEnabled) + "`\n");
 			}
 
 			GuildCommandInterface prefix = blob.getCommandManager().getCommand("prefix");
 			if (prefix != null) {
-				sB.append("`" + prefix.getUsage() + "`\n");
+				sB.append("`" + prefix.getUsage(isDevEnabled) + "`\n");
 			}
 
 			embed.addField("Information:", "Commands to take note of:\n" + sB, false);
 
-			// embed.addField("Commands : ", "`"+sB.toString()+"`\n", true);
-			// desc.append("`").append(sB).append("`\n");
-
-			// embed.addBlankField(true);
-			// embed.setFooter("Command list requested by: "+event.getAuthor().getAsTag(),
-			// event.getAuthor().getEffectiveAvatarUrl());
-
 			embed.setFooter(blob.getEvent().getMember().getEffectiveName(),
 					blob.getEvent().getMember().getUser().getEffectiveAvatarUrl());
 			embed.setTimestamp(Instant.now());
-			embed.setColor(0);
+			embed.setColor(Global.getEmbedColor());
 
 			blob.getChannel().sendMessageEmbeds(embed.build()).queue();
 
@@ -111,47 +100,57 @@ public class Help implements GuildCommandInterface {
 
 			if (command != null && ((deniedPages.contains(command.getHelpPage()) && isDevEnabled)
 					|| !deniedPages.contains(command.getHelpPage()))) {
-				if (!command.isNSFW()) {
-				EmbedBuilder eB = new EmbedBuilder();
+				if (!(command.isNSFW() && !blob.getChannel().isNSFW())) {
+					EmbedBuilder eB = new EmbedBuilder();
 
-				eB.setColor(0);
-				StringBuilder sB = new StringBuilder();
+					eB.setColor(Global.getEmbedColor());
+					StringBuilder sB = new StringBuilder();
 
-				eB.setTitle("Help results for: " + command.getCommandName());
-				if (command.getHelp() != null) {
-					eB.addField("Help info:", command.getHelp(), false);
-				} else {
-					eB.addField("Help info:", "This command does not contain help information", false);
-				}
-
-				eB.addField("Usage:", command.getUsage(), false);
-
-				eB.setFooter("Page: " + command.getHelpPage().toString());
-
-				if (command.getCommandCalls().length > 1) {
-					for (int i = 1; i < command.getCommandCalls().length; i++) {
-						sB.append("`"+command.getCommandCalls()[i]+"` ");
+					eB.setTitle("Help results for: " + command.getCommandName());
+					if (command.getHelp() != null) {
+						eB.addField("Help info:", command.getHelp(), false);
+					} else {
+						eB.addField("Help info:", "This command does not contain help information", false);
 					}
-					sB.append("\n");
-				}
-				
-				if (command.isNSFW()) {
-					sB.append("Is nsfw: "+command.isNSFW());
-				}
 
-				if (command.getRequiredPermission() != null) {
-					sB.append("Required Permission: " + command.getRequiredPermission().getName() + "\n");
-				}
+					eB.addField("Usage:", "`" + command.getUsage(isDevEnabled) + "`", false);
 
-				if (command.getTimeout() > 0) {
-					sB.append("Usage Timeout: " + command.getTimeout() + "\n");
-				}
+					eB.addField("Page:", command.getHelpPage().toString(), true); // ("Page: " +
+																					// command.getHelpPage().toString());
+					eB.setFooter(blob.getEvent().getMember().getEffectiveName(),
+							blob.getEvent().getMember().getUser().getEffectiveAvatarUrl());
+					eB.setTimestamp(Instant.now());
+					
+					if (command.getCommandCalls().length > 1) {
+						sB.append("Aliases: ");
+						for (int i = 1; i < command.getCommandCalls().length; i++) {
+							sB.append("`" + command.getCommandCalls()[i] + "` ");
+						}
+						sB.append("\n");
+					}
 
-				sB.append("Premium: " + command.isPremium() + "\n");
-				eB.addField("Misc", sB.toString(), false);
-				blob.getChannel().sendMessageEmbeds(eB.build()).queue();
+					if (command.isNSFW()) {
+						sB.append("Is nsfw: " + command.isNSFW() + "\n");
+					}
+
+					if (command.getRequiredPermission() != null) {
+						sB.append("Required Permission: " + command.getRequiredPermission().getName() + "\n");
+					}
+
+					if (command.getTimeout() > 0) {
+						sB.append("Usage Timeout: " + command.getTimeout() + "\n");
+					}
+
+					sB.append(
+							"Premium: " + ((command.getPremiumLevel() < 1) ? "no" : command.getPremiumLevel()) + "\n");
+					if (!sB.isEmpty()) {
+						eB.addField("Misc", sB.toString(), false);
+					}
+					blob.getChannel().sendMessageEmbeds(eB.build()).queue();
 				} else {
-					blob.getChannel().sendMessage("Sorry, but you are not allowed to view information about that command here, try somewhere more private").queue();
+					blob.getChannel().sendMessage(
+							"Sorry, but you are not allowed to view information about that command here, try somewhere more private")
+							.queue();
 				}
 			} else {
 				// Tools.wrongUsage(blob.getChannel(), command);
@@ -178,16 +177,6 @@ public class Help implements GuildCommandInterface {
 	public String getHelp() {
 
 		return "The help command, it seems like you already know how to use it. . .";
-	}
-
-	@Override
-	public String getUsage() {
-		return Global.prefix + getCommandCalls()[0] + " [Command name]";
-	}
-
-	@Override
-	public String getCompleteUsage() {
-		return Global.prefix + getCommandCalls()[0] + " [Command name | -dev]";
 	}
 
 	@Override

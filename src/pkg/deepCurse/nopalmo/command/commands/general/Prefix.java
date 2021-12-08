@@ -5,6 +5,7 @@ import java.util.HashMap;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Guild;
+import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Users;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.GuildCommandBlob;
 
@@ -27,7 +28,7 @@ public class Prefix implements GuildCommandInterface {
 			Guild.Prefix.setPrefix(
 					blob.getEvent().getGuild().getIdLong(), argumentList.get("prefix").getWildCardString());
 			blob.getEvent().getChannel().sendMessage("Set prefix to " + argumentList.get("prefix").getWildCardString()).queue();
-			blob.getChannel().sendMessage("Remember: you can always ping me to use any command in case you forget the prefix").queue();
+			if (!Users.isAdvancedUser(blob.getUserID())) blob.getChannel().sendMessage("Remember: you can always ping me to use any command in case you forget the prefix").queue();
 		} else {
 			Guild.Prefix.setPrefix(
 					blob.getEvent().getGuild().getIdLong(), Global.prefix);
@@ -43,11 +44,6 @@ public class Prefix implements GuildCommandInterface {
 		args.put("prefix", new Argument("prefix").setPosition(0).setIsWildcard(true));
 
 		return args;
-	}
-
-	@Override
-	public String getUsage() {
-		return Global.prefix + getCommandName() + " <prefix>";
 	}
 
 	@Override

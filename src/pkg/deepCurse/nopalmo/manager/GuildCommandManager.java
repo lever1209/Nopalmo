@@ -14,14 +14,15 @@ import java.util.regex.Pattern;
 
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
-import pkg.deepCurse.nopalmo.command.commands.general.Example;
 import pkg.deepCurse.nopalmo.command.commands.general.Prefix;
 import pkg.deepCurse.nopalmo.command.commands.general.Test;
 import pkg.deepCurse.nopalmo.command.commands.info.Git;
 import pkg.deepCurse.nopalmo.command.commands.info.Help;
+import pkg.deepCurse.nopalmo.command.commands.info.Info;
 import pkg.deepCurse.nopalmo.command.commands.info.Ping;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
+import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Users;
 import pkg.deepCurse.nopalmo.global.Tools;
 
 public class GuildCommandManager extends CommandManager {
@@ -31,7 +32,7 @@ public class GuildCommandManager extends CommandManager {
 
 	public GuildCommandManager() {
 		init();
-		executor = Executors.newSingleThreadExecutor();
+		executor = Executors.newWorkStealingPool();// newCachedThreadPool();
 	}
 
 	public void init() {
@@ -40,7 +41,7 @@ public class GuildCommandManager extends CommandManager {
 		addCommand(new Git());
 		addCommand(new Prefix());
 		addCommand(new Test());
-		addCommand(new Example());
+		addCommand(new Info());
 	}
 
 	private void addCommand(GuildCommandInterface c) {
@@ -100,7 +101,6 @@ public class GuildCommandManager extends CommandManager {
 					boolean printTime = false;
 					byte argSkipCount = 0;
 					boolean remainsValid = true;
-					// int id = 0;
 
 					HashMap<Integer, Argument> positionalArgs = new HashMap<Integer, Argument>();
 
@@ -109,11 +109,6 @@ public class GuildCommandManager extends CommandManager {
 							if (i.getPosition() >= 0) {
 								positionalArgs.put(i.getPosition(), i);
 							}
-
-							if (i.isSkipOriginalTaskOnRunnable()) {
-								remainsValid = false;
-							}
-
 						}
 					}
 
@@ -154,6 +149,9 @@ public class GuildCommandManager extends CommandManager {
 										if (guildCommand.getArguments().get(pre).getPermission() == null
 												|| DatabaseTools.Tools.Developers.hasPermission(commandBlob.getUserID(),
 														guildCommand.getArguments().get(pre).getPermission())) {
+											if (guildCommand.getArguments().get(pre).isSkipOriginalTaskOnRunnable()) {
+												remainsValid = false;
+											}
 											argumentList.put(pre, guildCommand.getArguments().get(pre));
 											if (guildCommand.getArguments().get(pre).isAutoStartRunnable()
 													&& guildCommand.getArguments().get(pre).getRunnableArg() != null) {
@@ -174,6 +172,9 @@ public class GuildCommandManager extends CommandManager {
 										if (guildCommand.getArguments().get(x).getPermission() == null
 												|| DatabaseTools.Tools.Developers.hasPermission(commandBlob.getUserID(),
 														guildCommand.getArguments().get(x).getPermission())) {
+											if (guildCommand.getArguments().get(x).isSkipOriginalTaskOnRunnable()) {
+												remainsValid = false;
+											}
 											argumentList.put(x, guildCommand.getArguments().get(x));
 											offset++;
 											if (guildCommand.getArguments().get(x).isAutoStartRunnable()
@@ -191,6 +192,9 @@ public class GuildCommandManager extends CommandManager {
 													|| DatabaseTools.Tools.Developers.hasPermission(
 															commandBlob.getUserID(),
 															positionalArgs.get(i - offset).getPermission())) {
+												if (positionalArgs.get(i - offset).isSkipOriginalTaskOnRunnable()) {
+													remainsValid = false;
+												}
 												if (positionalArgs.get(i - offset).getIsWildcard()) {
 													argumentList.put(positionalArgs.get(i - offset).getArgName(),
 															positionalArgs.get(i - offset).setWildCardString(x));
@@ -218,6 +222,21 @@ public class GuildCommandManager extends CommandManager {
 							}
 						}
 
+					}
+
+					if (guildCommand.isNSFW() && !commandBlob.getChannel().isNSFW()) {
+						commandBlob.getChannel().sendMessage(
+								"Sorry, but you cannot run this command here, maybe try somewhere more private?")
+								.queue();
+						remainsValid = false;
+					}
+
+					if (guildCommand.getPremiumLevel() > Users.getPremiumLevel(commandBlob.getUserID())) {
+						commandBlob.getChannel().sendMessage(
+								"Sorry, but you cannot run this command, it is premium subs only, of at least tier "
+										+ guildCommand.getPremiumLevel())
+								.queue();
+						remainsValid = false;
 					}
 
 					commandBlob.setCommandManager(this);

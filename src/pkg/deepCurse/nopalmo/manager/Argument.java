@@ -21,13 +21,15 @@ public class Argument {
 	private String argName = null;
 	private Argument[] subArgs = null;
 	private boolean requiresPrefix = false;
-	private Boolean isWildcard;
+	private Boolean isWildcard = false;
 	private int position = -1;
 	private String wildCardString = null;
 	private boolean autoStartRunnable = false;
 	private boolean skipOriginalTaskOnRunnable = false;
 	private RunnableArg runnableArg = null;
-	private String permissionLevel;
+	private String permissionLevel = null;
+	private boolean isRequired = false;
+	private boolean isDeveloper = false;
 	
 	public static final String argumentPrefix = "-"; // This exists for the sole reason of customization and will
 														// generally not change, ever, its recommended you keep it to
@@ -148,7 +150,7 @@ public class Argument {
 	}
 
 	public interface RunnableArg {
-
+		
 		public void run(CommandBlob blob);
 
 	}
@@ -186,11 +188,30 @@ public class Argument {
 
 	public Argument setPermissionLevel(String string) {
 		this.permissionLevel = string;
+		this.isDeveloper = true;
 		return this;
 	}
 	
 	public String getPermission() {
 		return this.permissionLevel;
+	}
+
+	public boolean isRequired() {
+		return this.isRequired;
+	}
+	
+	public Argument setIsRequired(boolean bool) {
+		this.isRequired = bool;
+		return this;
+	}
+
+	public boolean isDeveloper() {
+		return isDeveloper;
+	}
+
+	public Argument setDeveloper(boolean isDeveloper) {
+		this.isDeveloper = isDeveloper;
+		return this;
 	}
 
 }

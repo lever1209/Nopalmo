@@ -4,7 +4,6 @@ import java.util.HashMap;
 
 import net.dv8tion.jda.api.entities.MessageChannel;
 import pkg.deepCurse.nopalmo.command.CommandInterface.DualCommandInterface;
-import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import pkg.deepCurse.nopalmo.utils.UptimePing;
@@ -55,11 +54,6 @@ public class Ping implements DualCommandInterface {
 	@Override
 	public String[] getCommandCalls() {
 		return new String[] { "ping" };
-	}
-
-	@Override
-	public String getUsage() {
-		return Global.prefix + getCommandName()+" [" + Argument.argumentPrefix + "all]";
 	}
 
 	@Override

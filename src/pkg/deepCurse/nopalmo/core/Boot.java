@@ -18,6 +18,7 @@ import pkg.deepCurse.nopalmo.listener.DirectMessageReceivedListener;
 import pkg.deepCurse.nopalmo.listener.GuildMessageReceivedListener;
 import pkg.deepCurse.nopalmo.manager.DirectCommandManager;
 import pkg.deepCurse.nopalmo.manager.GuildCommandManager;
+import pkg.deepCurse.nopalmo.manager.StatusManager;
 import pkg.deepCurse.nopalmo.utils.Locks;
 import pkg.deepCurse.nopalmo.utils.LogHelper;
 
@@ -36,6 +37,16 @@ public class Boot {
 
 	public static void main(String[] args) {
 		LogHelper.boot("Booting: <" + pid + ">");
+
+		new Thread(() -> {
+			long count = 0;
+			while (true) {
+				if (count++ > 1000000000) {
+					count = 0;
+					System.out.println("owo");
+				}
+			}
+		}, "owo");
 
 		LogHelper.boot("Testing Lock. . .");
 
@@ -108,7 +119,7 @@ public class Boot {
 
 					.setEnableShutdownHook(true)
 
-					.build();
+					.build().awaitReady();
 
 		} catch (Exception e) {
 			LogHelper.crash(e);
@@ -117,12 +128,16 @@ public class Boot {
 		bot.getPresence().setStatus(OnlineStatus.ONLINE);
 		bot.getPresence().setActivity(Activity.listening("Infected Mushroom"));
 
+		LogHelper.boot("Init status list");
+		StatusManager.init();
+		LogHelper.boot("Initialized status list. . .");
+
 		long bootTime = System.currentTimeMillis() - preBootTime;
 
 		LogHelper.boot("Taken " + bootTime + "ms to boot");
 
-		// LogHelper.boot("Starting loop");
-		// loop();
+		LogHelper.boot("Starting loop");
+		loop();
 	}
 
 	private static void loop() {
@@ -132,38 +147,42 @@ public class Boot {
 		long fiveMins = lastTime;
 		long threeMins = lastTime;
 		long lastTimeUpdateStatus = lastTime;
-		long lastTimeCheckUpdate= lastTime;
-		
-		long dynamicWait = 0;
-		
+		long lastTimeCheckUpdate = lastTime;
+
+		long dynamicWait = Global.getDynamicWait();
+
 		while (running) {
-			
+
 			long now = System.currentTimeMillis();
-			
+
 			if (now > lastTime + dynamicWait) { // dynamic wait loop
-				
+				lastTime = now;
 			}
-			
+
 			if (now > lastTimeCheckUpdate + 900000) {
-				
+				lastTimeCheckUpdate = now;
 			}
-			
+
 			if (now > lastTimeUpdateStatus + dynamicWait && Global.isShuffleStatusEnabled()) {
-				
+				lastTimeUpdateStatus = now;
+
+				StatusManager.shuffle(bot);
+
 			}
-			
+
 			if (now > fifteenMins + 900000) {
-				
+				fifteenMins = now;
+
 			}
-			
+
 			if (now > fiveMins + 300000) {
-				
+				fiveMins = now;
 			}
-			
+
 			if (now > threeMins + 180000) {
-				
+				threeMins = now;
 			}
-			
+
 		}
 	}
 

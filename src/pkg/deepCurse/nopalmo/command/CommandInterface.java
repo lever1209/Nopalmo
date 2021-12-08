@@ -23,9 +23,10 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 		return false;
 	}
 
-	public default boolean isPremium() { // im probably never gonna use this, but ill leave it in for those who want to
+	public default int getPremiumLevel() { // im probably never gonna use this, but ill leave it in for those who want
+											// to
 		// see how i would implement it
-		return false;
+		return 0;
 	}
 
 	public abstract HelpPage getHelpPage();
@@ -36,8 +37,20 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 
 	public String getHelp();
 
-	public default String getUsage() {
-		return Global.prefix + getCommandName();
+	public default String getUsage(boolean hasPermissionInfo) {
+
+		StringBuilder sB = new StringBuilder();
+		for (Argument i : getArguments().values()) {
+			if (!i.isDeveloper() || (hasPermissionInfo && i.isDeveloper())) {
+			sB.append(i.isRequired() ? "<" : "[");
+			if (i.getPrefixRequirement()) {
+				sB.append(Argument.argumentPrefix);
+			}
+			sB.append(i.getArgName() + (i.isRequired() ? "> " : "] "));
+			}
+		}
+
+		return (Global.prefix + getCommandName() + " " + sB.toString()).strip();
 	}
 
 	public default int getTimeout() {
@@ -45,9 +58,7 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 	}
 
 	@Nullable
-	public default HashMap<String, Argument> getArguments() {
-		return null;
-	}
+	public HashMap<String, Argument> getArguments();
 
 	public interface DualCommandInterface extends DirectCommandInterface, GuildCommandInterface {
 		@Override
@@ -80,10 +91,6 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 		public default Permission getRequiredPermission() {
 			return null;
 		}
-	}
-
-	public default String getCompleteUsage() {
-		return Global.prefix + getCommandName();
 	}
 
 }

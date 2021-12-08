@@ -3,7 +3,6 @@ package pkg.deepCurse.nopalmo.command.commands.info;
 import java.util.HashMap;
 
 import pkg.deepCurse.nopalmo.command.CommandInterface.DualCommandInterface;
-import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
 
@@ -32,7 +31,7 @@ public class Git implements DualCommandInterface {
 			
 			blob.getChannel().sendMessage("This is the automatically running argument inside of " + this.getCommandName()).queue();
 			
-		}).setPrefixRequirement(true).setAutoStartRunnable(true));
+		}).setPrefixRequirement(true).setAutoStartRunnable(true).setDeveloper(true));
 
 		return args;
 	}
@@ -40,11 +39,6 @@ public class Git implements DualCommandInterface {
 	@Override
 	public String getHelp() {
 		return "Posts my github link";
-	}
-	
-	@Override
-	public String getCompleteUsage() {
-		return Global.prefix + getCommandName() + " [-test]";
 	}
 	
 }

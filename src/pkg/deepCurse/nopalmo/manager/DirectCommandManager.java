@@ -26,7 +26,7 @@ public class DirectCommandManager extends CommandManager {
 
 	public DirectCommandManager() {
 		init();
-		executor = Executors.newSingleThreadExecutor();
+		executor = Executors.newCachedThreadPool();
 	}
 
 	public void init() {
