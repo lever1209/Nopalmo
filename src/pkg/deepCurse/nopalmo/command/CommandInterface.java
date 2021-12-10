@@ -38,13 +38,15 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 	public default String getUsage(boolean hasPermissionInfo) {
 
 		StringBuilder sB = new StringBuilder();
-		for (Argument i : getArguments().values()) {
-			if (!i.isDeveloper() || (hasPermissionInfo && i.isDeveloper())) {
-				sB.append(i.isRequired() ? "<" : "[");
-				if (i.getPrefixRequirement()) {
-					sB.append(Argument.argumentPrefix);
+		if (getArguments() != null) {
+			for (Argument i : getArguments().values()) {
+				if (!i.isDeveloper() || (hasPermissionInfo && i.isDeveloper())) {
+					sB.append(i.isRequired() ? "<" : "[");
+					if (i.getPrefixRequirement()) {
+						sB.append(Argument.argumentPrefix);
+					}
+					sB.append(i.getArgName() + (i.isRequired() ? "> " : "] "));
 				}
-				sB.append(i.getArgName() + (i.isRequired() ? "> " : "] "));
 			}
 		}
 
@@ -65,7 +67,8 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 		}
 
 		@Override
-		public default void runDirectCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
+		public default void runPrivateCommand(CommandBlob blob, HashMap<String, Argument> argumentMap)
+				throws Exception {
 			runDualCommand(blob, argumentMap);
 		}
 
@@ -74,7 +77,7 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 	}
 
 	public interface PrivateCommandInterface extends CommandInterface {
-		public void runDirectCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception;
+		public void runPrivateCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception;
 	}
 
 	public interface GuildCommandInterface extends CommandInterface {

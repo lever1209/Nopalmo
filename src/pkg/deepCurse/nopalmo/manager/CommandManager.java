@@ -18,13 +18,14 @@ import pkg.deepCurse.nopalmo.command.CommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.DualCommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.PrivateCommandInterface;
-import pkg.deepCurse.nopalmo.command.commands.general.Example;
 import pkg.deepCurse.nopalmo.command.commands.general.Prefix;
 import pkg.deepCurse.nopalmo.command.commands.general.Test;
 import pkg.deepCurse.nopalmo.command.commands.info.Git;
 import pkg.deepCurse.nopalmo.command.commands.info.Help;
 import pkg.deepCurse.nopalmo.command.commands.info.Info;
 import pkg.deepCurse.nopalmo.command.commands.info.Ping;
+import pkg.deepCurse.nopalmo.command.commands.testing.GuildCommand;
+import pkg.deepCurse.nopalmo.command.commands.testing.PrivateCommand;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
@@ -50,7 +51,8 @@ public class CommandManager {
 		addCommand(new Prefix()); // guild
 		addCommand(new Test()); // guild
 		addCommand(new Info()); // guild direct
-		addCommand(new Example()); // dual
+		addCommand(new GuildCommand()); // guild
+		addCommand(new PrivateCommand());
 	}
 
 	private void addCommand(CommandInterface c) {
@@ -256,7 +258,19 @@ public class CommandManager {
 						} else if (command instanceof GuildCommandInterface && event.isFromGuild()) {
 							((GuildCommandInterface) command).runGuildCommand(commandBlob, argumentList);
 						} else if (command instanceof PrivateCommandInterface && !event.isFromGuild()) {
-							((PrivateCommandInterface) command).runDirectCommand(commandBlob, argumentList);
+							((PrivateCommandInterface) command).runPrivateCommand(commandBlob, argumentList);
+						}
+
+						if (command instanceof GuildCommandInterface && !event.isFromGuild()) {
+							event.getChannel()
+									.sendMessage(
+											"Sorry, but you need to be in a "
+													+ (DatabaseTools.Tools.Users.isAdvancedUser(
+															commandBlob.getAuthorID()) ? "guild" : "server")
+													+ " to use this command. . .")
+									.queue();
+						} else if (command instanceof PrivateCommandInterface && event.isFromGuild()) {
+							event.getChannel().sendMessage("Sorry, but this command will only run in dms. . .").queue();
 						}
 					}
 

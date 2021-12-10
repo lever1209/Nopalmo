@@ -39,7 +39,7 @@ public class Info implements GuildCommandInterface, PrivateCommandInterface {
 	}
 
 	@Override
-	public void runDirectCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
+	public void runPrivateCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
 	}
 
 	@Override
