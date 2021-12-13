@@ -30,11 +30,12 @@ public class Info implements GuildCommandInterface, PrivateCommandInterface {
 	@Override
 	public @Nullable HashMap<String, Argument> getArguments() {
 		HashMap<String, Argument> args = new HashMap<String, Argument>();
-
+		
 		args.put("userdump", new Argument("userdump", (CommandBlob blob) -> {
-			blob.getChannel().sendMessage(Users.dump(blob.getAuthorID())).queue();
-		}).setPrefixRequirement(true).setAutoStartRunnable(true).setSkipOriginalTaskOnRunnable(true));
-
+			blob.getChannel().sendMessage(!Users.dump(blob.getAuthorID()).isEmpty() ? Users.dump(blob.getAuthorID())
+					: "Sorry, but this user does not exist in the database").queue();
+		}).setPrefixRequirement(true).setAutoStartRunnable(true).setSkipOriginalTaskOnRunnable(true).addAliases("u"));
+		
 		return args;
 	}
 
@@ -44,6 +45,6 @@ public class Info implements GuildCommandInterface, PrivateCommandInterface {
 
 	@Override
 	public void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentList) throws Exception {
-		blob.getChannel().sendMessage("EEE").queue();
+		blob.getChannel().sendMessage("This command is used to send data stored in the database to whoever is authorized to view it, to view your own data, use `"+getCommandName()+" -userdump`").queue();
 	}
 }

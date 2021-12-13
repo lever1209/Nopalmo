@@ -139,6 +139,10 @@ public class DatabaseTools {
 				}
 			}
 
+			public static void addUser(long idLong) {
+				
+			}
+
 		}
 
 		public class Guild {

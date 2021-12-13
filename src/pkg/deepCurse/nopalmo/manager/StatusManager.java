@@ -19,7 +19,7 @@ public class StatusManager {
 		activityList.add(Activity.watching(
 				Boot.bot.getUserCache().asList().size() + " users in " + Boot.bot.getGuilds().size() + " servers"));
 		activityList.add(Activity.watching("for " + Global.prefix + "help"));
-		activityList.add(Activity.competing("your mothers love"));
+		activityList.add(Activity.listening("Infected Mushroom"));
 //		activityList.add(EntityBuilder.createActivity("owo", null, ActivityType.CUSTOM_STATUS));
 	}
 

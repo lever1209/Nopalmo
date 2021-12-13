@@ -32,6 +32,7 @@ public class Git implements DualCommandInterface {
 			blob.getChannel()
 					.sendMessage("This is the automatically running argument inside of " + this.getCommandName())
 					.queue();
+//			blob.getCommandManager().init();
 
 		}).setPrefixRequirement(true).setAutoStartRunnable(true).setDeveloper(true));
 

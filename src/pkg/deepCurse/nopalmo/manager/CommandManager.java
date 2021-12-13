@@ -24,6 +24,7 @@ import pkg.deepCurse.nopalmo.command.commands.info.Git;
 import pkg.deepCurse.nopalmo.command.commands.info.Help;
 import pkg.deepCurse.nopalmo.command.commands.info.Info;
 import pkg.deepCurse.nopalmo.command.commands.info.Ping;
+import pkg.deepCurse.nopalmo.command.commands.info.Reload;
 import pkg.deepCurse.nopalmo.command.commands.testing.GuildCommand;
 import pkg.deepCurse.nopalmo.command.commands.testing.PrivateCommand;
 import pkg.deepCurse.nopalmo.core.Boot;
@@ -45,6 +46,7 @@ public class CommandManager {
 	}
 
 	public void init() {
+		commandMap.clear();
 		addCommand(new Help(this));// guild
 		addCommand(new Ping()); // dual
 		addCommand(new Git()); // dual
@@ -52,15 +54,16 @@ public class CommandManager {
 		addCommand(new Test()); // guild
 		addCommand(new Info()); // guild direct
 		addCommand(new GuildCommand()); // guild
-		addCommand(new PrivateCommand());
+		addCommand(new PrivateCommand()); // private
+		addCommand(new Reload()); // dual
 	}
 
 	private void addCommand(CommandInterface c) {
-		if (!commandMap.containsKey(c.getCommandName())) {
-			commandMap.put(c.getCommandName(), c);
-		} else {
-			commandMap.remove(c.getCommandName());
-			commandMap.put(c.getCommandName(), c);
+
+		for (String i : c.getCommandCalls()) {
+//			if (!commandMap.containsKey(i)) {
+				commandMap.put(i, c);
+//			}
 		}
 	}
 
@@ -93,7 +96,9 @@ public class CommandManager {
 		} else {
 			return;
 		}
-
+		
+		Users.addUser(event.getAuthor().getIdLong());
+		
 		final String[] split = message.replaceFirst("(?i)" + Pattern.quote(splicer), "").split("\\s+");
 		final String commandCall = split[0].toLowerCase();
 
@@ -261,7 +266,7 @@ public class CommandManager {
 							((PrivateCommandInterface) command).runPrivateCommand(commandBlob, argumentList);
 						}
 
-						if (command instanceof GuildCommandInterface && !event.isFromGuild()) {
+						if (command instanceof GuildCommandInterface && !event.isFromGuild() && !(command instanceof PrivateCommandInterface)) {
 							event.getChannel()
 									.sendMessage(
 											"Sorry, but you need to be in a "
@@ -269,7 +274,7 @@ public class CommandManager {
 															commandBlob.getAuthorID()) ? "guild" : "server")
 													+ " to use this command. . .")
 									.queue();
-						} else if (command instanceof PrivateCommandInterface && event.isFromGuild()) {
+						} else if (command instanceof PrivateCommandInterface && event.isFromGuild() && !(command instanceof GuildCommandInterface)) {
 							event.getChannel().sendMessage("Sorry, but this command will only run in dms. . .").queue();
 						}
 					}

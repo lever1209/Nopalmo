@@ -32,42 +32,79 @@ public class Help implements GuildCommandInterface {
 		deniedPages.add(HelpPage.EGG);
 		deniedPages.add(HelpPage.TESTING);
 
-		if (argumentMap.isEmpty() || (isDevEnabled && argumentMap.size() == 1)) {
+		if (argumentMap.get("commandName") == null) {
 			EmbedBuilder embed = new EmbedBuilder().setTitle(isDevEnabled ? "^Commands:" : "Commands:");
 
-			HashMap<HelpPage, List<String>> commandHash = new HashMap<HelpPage, List<String>>();
+			HashMap<HelpPage, ArrayList<String>> commandHash = new HashMap<HelpPage, ArrayList<String>>();
 
-			for (CommandInterface command : manager.getCommands()) {
-				List<String> commandNameList = commandHash.get(command.getHelpPage());
-				if (commandNameList == null) {
-					commandNameList = new ArrayList<String>();
-
-				}
-				commandNameList.add(command.getCommandName());
-				commandHash.put(command.getHelpPage(), commandNameList);
-			}
+			// TODO yet another rewrite
+			// TODO add command to log a string
 
 			for (HelpPage i : HelpPage.values()) {
-				if (deniedPages.contains(i) && argumentMap.get("dev") == null) {
+				ArrayList<String> commandNameList = commandHash.get(i);
+				for (CommandInterface command : manager.getCommands()) {
+					if (!(deniedPages.contains(i) && argumentMap.get("dev") == null)) {
+						if (command.getHelpPage() == i) {
+							if (commandNameList == null) {
+								commandNameList = new ArrayList<String>();
+							}
 
-				} else if (commandHash.get(i) != null) {
+							if (!commandNameList.contains(command.getCommandName())) {
+								commandNameList.add(command.getCommandName());
 
+								commandHash.put(command.getHelpPage(), commandNameList);
+
+							}
+						}
+					}
+				}
+				commandNameList = null;
+			}
+			
+			// blob.getChannel().sendMessage(commandHash.toString()).queue();
+
+			for (HelpPage i : HelpPage.values()) {
+				if (commandHash.get(i) != null) {
 					StringBuilder sB = new StringBuilder();
-
 					int count = 0;
 					for (String j : commandHash.get(i)) {
-						if (++count > 3) {
-							sB.append("\n");
+						if (count >= 3) {
 							count = 0;
+							sB.append("\n");
 						}
+						count++;
 						sB.append("`" + j + "` ");
 					}
-
 					embed.addField(i.toString(), sB.toString(), true);
 
 				}
-
 			}
+
+//			for () {
+//				
+//			}
+
+//			for (HelpPage i : HelpPage.values()) {
+//				if (deniedPages.contains(i) && argumentMap.get("dev") == null) {
+//
+//				} else if (commandHash.get(i) != null) {
+//
+//					StringBuilder sB = new StringBuilder();
+//
+//					int count = 0;
+//					for (String j : commandHash.get(i)) {
+//						if (++count > 3) {
+//							count = 0;
+//							sB.append("\n");
+//						}
+//						sB.append("`" + j + "` ");
+//					}
+//
+//					embed.addField(i.toString(), sB.toString(), true);
+//
+//				}
+//
+//			}
 
 			StringBuilder sB = new StringBuilder();
 
@@ -184,7 +221,8 @@ public class Help implements GuildCommandInterface {
 		HashMap<String, Argument> args = new HashMap<String, Argument>();
 
 		args.put("commandName", new Argument("commandName").setPosition(0).setIsWildcard(true));
-		args.put("dev", new Argument("dev").setPrefixRequirement(true).setPermissionLevel("infopermission"));
+		args.put("dev", new Argument("dev").setPrefixRequirement(true).setPermissionLevel("infopermission")
+				.addAliases("d", "developer", "extra", "shit", "to", "test"));
 
 		return args;
 	}

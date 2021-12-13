@@ -1,5 +1,8 @@
 package pkg.deepCurse.nopalmo.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Argument {
 
 	// README
@@ -30,6 +33,7 @@ public class Argument {
 	private String permissionLevel = null;
 	private boolean isRequired = false;
 	private boolean isDeveloper = false;
+	private List<String> aliases = new ArrayList<String>();
 
 	public static final String argumentPrefix = "-"; // This exists for the sole reason of customization and will
 														// generally not change, ever, its recommended you keep it to
@@ -136,7 +140,7 @@ public class Argument {
 		return isWildcard;
 	}
 
-	public boolean getPrefixRequirement() {
+	public boolean isPrefixRequired() {
 		return this.requiresPrefix;
 	}
 
@@ -212,6 +216,17 @@ public class Argument {
 	public Argument setDeveloper(boolean isDeveloper) {
 		this.isDeveloper = isDeveloper;
 		return this;
+	}
+
+	public Argument addAliases(String... alias) {
+		for (String i : alias) {
+			this.aliases.add(i);
+		}
+		return this;
+	}
+
+	public List<String> getAliases() {
+		return this.aliases;
 	}
 
 }

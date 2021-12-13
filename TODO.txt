@@ -1,4 +1,5 @@
-mix command managers
+// DONE mix command managers
 finish loop
-add socket server for better management / integration
-implement pheonix in a smarter way than last time
+// DONE add socket server for better management / integration
+// DONE implement pheonix in a smarter way than last time
+add better security to the socket server
