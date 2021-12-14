@@ -29,6 +29,7 @@ public class CommandBlob {
 	private Member member = null;
 	private Message message = null;
 
+	private boolean isDeveloper = false;
 	private boolean isWebhookMessage = false;
 	private boolean isFromGuild = false;
 
@@ -162,5 +163,13 @@ public class CommandBlob {
 
 	public void setFromGuild(boolean isFromGuild) {
 		this.isFromGuild = isFromGuild;
+	}
+
+	public boolean isDeveloper() {
+		return isDeveloper;
+	}
+
+	public void setDeveloper(boolean isDeveloper) {
+		this.isDeveloper = isDeveloper;
 	}
 }

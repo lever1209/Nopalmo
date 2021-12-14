@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Socks {
-	
+
 	public static void sendStringSock(String address, int port, String input) {
 		try {
 			Socket cSocket = new Socket(address, port);
@@ -18,5 +18,5 @@ public class Socks {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

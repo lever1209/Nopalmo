@@ -18,6 +18,7 @@ import pkg.deepCurse.nopalmo.command.CommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.DualCommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.PrivateCommandInterface;
+import pkg.deepCurse.nopalmo.command.commands.fun.Stupid;
 import pkg.deepCurse.nopalmo.command.commands.general.Prefix;
 import pkg.deepCurse.nopalmo.command.commands.general.Test;
 import pkg.deepCurse.nopalmo.command.commands.info.Git;
@@ -25,10 +26,12 @@ import pkg.deepCurse.nopalmo.command.commands.info.Help;
 import pkg.deepCurse.nopalmo.command.commands.info.Info;
 import pkg.deepCurse.nopalmo.command.commands.info.Ping;
 import pkg.deepCurse.nopalmo.command.commands.info.Reload;
+import pkg.deepCurse.nopalmo.command.commands.testing.BontebokInterpret;
 import pkg.deepCurse.nopalmo.command.commands.testing.GuildCommand;
 import pkg.deepCurse.nopalmo.command.commands.testing.PrivateCommand;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
+import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Developers;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Users;
 import pkg.deepCurse.nopalmo.global.Tools;
@@ -56,13 +59,15 @@ public class CommandManager {
 		addCommand(new GuildCommand()); // guild
 		addCommand(new PrivateCommand()); // private
 		addCommand(new Reload()); // dual
+		addCommand(new BontebokInterpret()); // dual
+		addCommand(new Stupid()); // guild
 	}
 
 	private void addCommand(CommandInterface c) {
 
 		for (String i : c.getCommandCalls()) {
 //			if (!commandMap.containsKey(i)) {
-				commandMap.put(i, c);
+			commandMap.put(i, c);
 //			}
 		}
 	}
@@ -96,9 +101,9 @@ public class CommandManager {
 		} else {
 			return;
 		}
-		
+
 		Users.addUser(event.getAuthor().getIdLong());
-		
+
 		final String[] split = message.replaceFirst("(?i)" + Pattern.quote(splicer), "").split("\\s+");
 		final String commandCall = split[0].toLowerCase();
 
@@ -111,7 +116,7 @@ public class CommandManager {
 				try {
 					CommandBlob commandBlob = new CommandBlob(event, this);
 					CommandInterface command = commandMap.get(commandCall);
-					HashMap<String, Argument> argumentList = new HashMap<String, Argument>();
+					HashMap<String, Argument> argumentMap = new HashMap<String, Argument>();
 
 					boolean printTime = false;
 					byte argSkipCount = 0;
@@ -148,6 +153,10 @@ public class CommandManager {
 							break;
 						}
 					}
+
+					commandBlob.setDeveloper(
+							Developers.getDeveloperBoolean(commandBlob.getAuthorID(), "developercommandpermission"));
+
 					// split up so global commands are actually global, and will not be affected by
 					// neighboring local args
 					for (int i = 0; i < newArgs.size(); i++) {
@@ -168,7 +177,7 @@ public class CommandManager {
 											if (command.getArguments().get(pre).isSkipOriginalTaskOnRunnable()) {
 												remainsValid = false;
 											}
-											argumentList.put(pre, command.getArguments().get(pre));
+											argumentMap.put(pre, command.getArguments().get(pre));
 											if (command.getArguments().get(pre).isAutoStartRunnable()
 													&& command.getArguments().get(pre).getRunnableArg() != null) {
 												command.getArguments().get(pre).getRunnableArg().run(commandBlob);
@@ -191,7 +200,7 @@ public class CommandManager {
 											if (command.getArguments().get(x).isSkipOriginalTaskOnRunnable()) {
 												remainsValid = false;
 											}
-											argumentList.put(x, command.getArguments().get(x));
+											argumentMap.put(x, command.getArguments().get(x));
 											offset++;
 											if (command.getArguments().get(x).isAutoStartRunnable()
 													&& command.getArguments().get(x).getRunnableArg() != null) {
@@ -211,7 +220,7 @@ public class CommandManager {
 													remainsValid = false;
 												}
 												if (positionalArgs.get(i - offset).getIsWildcard()) {
-													argumentList.put(positionalArgs.get(i - offset).getArgName(),
+													argumentMap.put(positionalArgs.get(i - offset).getArgName(),
 															positionalArgs.get(i - offset).setWildCardString(x));
 												} else {
 													Tools.wrongUsage(event.getChannel(), command);
@@ -231,8 +240,8 @@ public class CommandManager {
 								}
 
 							} else {
-								Tools.wrongUsage(event.getChannel(), command);
-								remainsValid = false;
+//								Tools.wrongUsage(event.getChannel(), command);
+//								remainsValid = false;
 							}
 						}
 
@@ -244,6 +253,14 @@ public class CommandManager {
 										+ command.getPremiumLevel())
 								.queue();
 						remainsValid = false;
+					}
+
+					if (Help.deniedPages.contains(command.getHelpPage())) {
+						if (!commandBlob.isDeveloper()) {
+							commandBlob.getChannel()
+									.sendMessage("Sorry, but you are not allowed to run this command. . ").queue();
+							remainsValid = false;
+						}
 					}
 
 					commandBlob.setCommandManager(this);
@@ -258,15 +275,26 @@ public class CommandManager {
 					}
 
 					if (remainsValid) {
-						if (command instanceof DualCommandInterface) {
-							((DualCommandInterface) command).runDualCommand(commandBlob, argumentList);
-						} else if (command instanceof GuildCommandInterface && event.isFromGuild()) {
-							((GuildCommandInterface) command).runGuildCommand(commandBlob, argumentList);
-						} else if (command instanceof PrivateCommandInterface && !event.isFromGuild()) {
-							((PrivateCommandInterface) command).runPrivateCommand(commandBlob, argumentList);
+
+						if (command.getArguments() == null) {
+							StringBuilder sB = new StringBuilder();
+							for (String i : newArgs) {
+								sB.append(i + " ");
+							}
+							argumentMap.clear();
+							argumentMap.put("null", new Argument("null").setWildCardString(sB.toString().trim()));
 						}
 
-						if (command instanceof GuildCommandInterface && !event.isFromGuild() && !(command instanceof PrivateCommandInterface)) {
+						if (command instanceof DualCommandInterface) {
+							((DualCommandInterface) command).runDualCommand(commandBlob, argumentMap);
+						} else if (command instanceof GuildCommandInterface && event.isFromGuild()) {
+							((GuildCommandInterface) command).runGuildCommand(commandBlob, argumentMap);
+						} else if (command instanceof PrivateCommandInterface && !event.isFromGuild()) {
+							((PrivateCommandInterface) command).runPrivateCommand(commandBlob, argumentMap);
+						}
+
+						if (command instanceof GuildCommandInterface && !event.isFromGuild()
+								&& !(command instanceof PrivateCommandInterface)) {
 							event.getChannel()
 									.sendMessage(
 											"Sorry, but you need to be in a "
@@ -274,7 +302,8 @@ public class CommandManager {
 															commandBlob.getAuthorID()) ? "guild" : "server")
 													+ " to use this command. . .")
 									.queue();
-						} else if (command instanceof PrivateCommandInterface && event.isFromGuild() && !(command instanceof GuildCommandInterface)) {
+						} else if (command instanceof PrivateCommandInterface && event.isFromGuild()
+								&& !(command instanceof GuildCommandInterface)) {
 							event.getChannel().sendMessage("Sorry, but this command will only run in dms. . .").queue();
 						}
 					}

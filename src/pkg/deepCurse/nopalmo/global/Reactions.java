@@ -28,7 +28,8 @@ public class Reactions {
 	}
 
 	public static String getEmote(String id) {
-		return id.startsWith(":") ? internalReactionMap.get(id.substring(1)) : "<:" + id + ":" + reactionMap.get(id) + ">";
+		return id.startsWith(":") ? internalReactionMap.get(id.substring(1))
+				: "<:" + id + ":" + reactionMap.get(id) + ">";
 	}
 
 }

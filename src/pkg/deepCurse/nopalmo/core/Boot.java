@@ -41,54 +41,56 @@ public class Boot {
 
 	public static void main(String[] args) {
 
-		PhoenixSettings settings = new PhoenixSettings().setAuthentication(args[3]).setCommandSplitRegex(", ").setCommandManager(new PhoenixCommandManager());
+		PhoenixSettings settings = new PhoenixSettings().setAuthentication(args[3]).setCommandSplitRegex(", ")
+				.setCommandManager(new PhoenixCommandManager());
 
-		// TODO using join and a while last time + 15000 < current time, then kill and proceed as a failure
-		
+		// TODO using join and a while last time + 15000 < current time, then kill and
+		// proceed as a failure
+
 		settings.commandManager.addCommand("phoenix-update", (PhoenixRuntime runtime, List<String> commandArgs) -> {
-			System.out.println("Received <phoenix-update>");
-			
+			LogHelper.log("Received <phoenix-update>", Boot.class);
+
 			Socks.sendStringSock(settings.address, settings.commonPort, "phoenix-update-confirm");
-			
-			System.out.println("Sent <phoenix-update-confirm>");
-			
+
+			LogHelper.log("Sent <phoenix-update-confirm>", Boot.class);
+
 			if (bot != null) {
 				bot.shutdown();
 			}
 
 			runtime.shutdown(9);
 		});
-		
+
 //		settings.actions.put("phoenix-update-confirm", (PhoenixRuntime runtime) -> {
-//			System.out.println("Received <phoenix-update-confirm>");
+//			LogHelper.log("Received <phoenix-update-confirm>");
 //		});
-		
+
 		PhoenixRuntime runtime = new PhoenixRuntime(settings, new PhoenixInterface() {
 
 			@Override
 			public void boot() {
-				LogHelper.boot("Booting: <" + pid + ">");
+				LogHelper.log("Booting: <" + pid + ">", Boot.class);
 
 				long preBootTime = System.currentTimeMillis();
 
 				isProd = args[2].contentEquals("prod");
 
-				LogHelper.boot("Connecting to mariadb:nopalmo");
+				LogHelper.log("Connecting to mariadb:nopalmo", Boot.class);
 				try {
 					databaseTools = new DatabaseTools(args[1]);
-					LogHelper.boot("Connected. . .");
+					LogHelper.log("Connected. . .", Boot.class);
 				} catch (SQLException | ClassNotFoundException e1) {
 					e1.printStackTrace();
-					LogHelper.boot("Failed to connect\nShutting down. . .");
+					LogHelper.log("Failed to connect\nShutting down. . .", Boot.class);
 					System.exit(4);
 				}
 
-				LogHelper.boot("Init reaction/emote list");
+				LogHelper.log("Init reaction/emote list", Boot.class);
 				Reactions.init();
-				LogHelper.boot("Initialized reaction/emote list. . .");
-				LogHelper.boot("Init commands list");
+				LogHelper.log("Initialized reaction/emote list. . .", Boot.class);
+				LogHelper.log("Init commands list", Boot.class);
 				commandManager.init();
-				LogHelper.boot("Initialized commands list. . .");
+				LogHelper.log("Initialized commands list. . .", Boot.class);
 
 				try {
 //						bot = JDABuilder.createDefault(args[0]).setChunkingFilter(ChunkingFilter.ALL)
@@ -133,23 +135,21 @@ public class Boot {
 				} catch (Exception e) {
 					LogHelper.crash(e);
 				}
-				
-				LogHelper.boot("Using account: " + bot.getSelfUser().getName());
-				
-				
-				
+
+				LogHelper.log("Using account: " + bot.getSelfUser().getName(), Boot.class);
+
 				bot.getPresence().setStatus(OnlineStatus.ONLINE);
 				bot.getPresence().setActivity(Activity.listening("Infected Mushroom"));
 
-				LogHelper.boot("Init status list");
+				LogHelper.log("Init status list", Boot.class);
 				StatusManager.init();
-				LogHelper.boot("Initialized status list. . .");
+				LogHelper.log("Initialized status list. . .", Boot.class);
 
 				long bootTime = System.currentTimeMillis() - preBootTime;
 
-				LogHelper.boot("Taken " + bootTime + "ms to boot");
+				LogHelper.log("Taken " + bootTime + "ms to boot", Boot.class);
 
-				LogHelper.boot("Starting loop");
+				LogHelper.log("Starting loop", Boot.class);
 				loop();
 			}
 
@@ -171,7 +171,7 @@ public class Boot {
 					if (now > lastTime + dynamicWait) { // dynamic wait loop
 						lastTime = now;
 						try {
-						bot.getSelfUser();
+							bot.getSelfUser();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -206,10 +206,8 @@ public class Boot {
 		});
 
 		runtime.setLockedRunnable(() -> {
-			System.out.println("System is locked\nSending <phoenix-update> instead. . . ");
-			
-			
-			
+			LogHelper.log("System is locked\nSending <phoenix-update> instead. . . ", Boot.class);
+
 			try {
 				Socket cSocket = new Socket("127.0.0.1", settings.commonPort);
 				DataOutputStream dOut = new DataOutputStream(cSocket.getOutputStream());
@@ -220,11 +218,9 @@ public class Boot {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
-			
-			
+
 			// settings.getRuntime().shutdown(0);
-			
+
 		});
 
 		runtime.launch();

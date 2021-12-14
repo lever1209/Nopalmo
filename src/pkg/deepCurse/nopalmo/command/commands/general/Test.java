@@ -27,12 +27,12 @@ public class Test implements GuildCommandInterface {
 
 	@Override
 	public boolean isNSFW() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public int getPremiumLevel() {
-		return 1;
+		return 0;
 	}
 
 	@Override

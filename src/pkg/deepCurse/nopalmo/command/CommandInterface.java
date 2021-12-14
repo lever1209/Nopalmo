@@ -37,31 +37,34 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 
 	public default String getUsage(boolean hasPermissionInfo) {
 		StringBuilder sB = new StringBuilder();
-		for (Argument i : getArguments().values()) {
-			if ((i.isDeveloper() && hasPermissionInfo) || !i.isDeveloper()) {
-				if (i.isRequired()) {
-					sB.append("<");
-				} else {
-					sB.append("[");
-				}
+		if (getArguments() != null) {
+			for (Argument i : getArguments().values()) {
+				if ((i.isDeveloper() && hasPermissionInfo) || !i.isDeveloper()) {
+					if (i.isRequired()) {
+						sB.append("<");
+					} else {
+						sB.append("[");
+					}
 
-				sB.append((i.isPrefixRequired() ? Argument.argumentPrefix : "")+i.getArgName());
+					sB.append((i.isPrefixRequired() ? Argument.argumentPrefix : "") + i.getArgName());
 
-				if (i.getAliases() != null) {
-					for (String j : i.getAliases()) {
-						sB.append(" | " + (i.isPrefixRequired() ? Argument.argumentPrefix : "") + j);
+					if (i.getAliases() != null) {
+						for (String j : i.getAliases()) {
+							sB.append(" | " + (i.isPrefixRequired() ? Argument.argumentPrefix : "") + j);
+						}
+					}
+
+					if (i.isRequired()) {
+						sB.append("> ");
+					} else {
+						sB.append("] ");
 					}
 				}
-
-				if (i.isRequired()) {
-					sB.append("> ");
-				} else {
-					sB.append("] ");
-				}
 			}
+			return Global.prefix + getCommandName() + " " + sB.toString().trim();
 		}
 
-		return Global.prefix + getCommandName() + " " + sB.toString().trim();
+		return Global.prefix + getCommandName();
 	}
 
 	public default int getTimeout() {
@@ -104,41 +107,3 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 	}
 
 }
-/*
- * 
- * 
- * StringBuilder sB = new StringBuilder(); if (getArguments() != null) { for
- * (String i : getArguments().keySet()) { // sB.delete(0, sB.length()); if
- * (!getArguments().get(i).isDeveloper() || (hasPermissionInfo &&
- * getArguments().get(i).isDeveloper())) {
- * sB.append(getArguments().get(i).isRequired() ? "<" : "[");
- * 
- * sB.append((getArguments().get(i).isPrefixRequired() ?
- * sB.append(Argument.argumentPrefix) : ""));
- * 
- * sB.append(i); // System.out.println("01"+sB.toString()); // for (int j = 0; j
- * < getArguments().get(i).getAliases().size(); j++) { // sB.append((j <
- * getArguments().get(i).getAliases().size() ? " | " : "") // +
- * (getArguments().get(i).isPrefixRequired() ?
- * sB.append(Argument.argumentPrefix) : "") // +
- * getArguments().get(i).getAliases().get(j)); //
- * System.out.println("02"+sB.toString()); // }
- * sB.append(getArguments().get(i).isRequired() ? "> " : "] ");
- * System.out.println("[000] :\t"+sB.toString()); } } }
- * 
- * System.out.println("[001] :\t"+sB.toString()); return (Global.prefix +
- * getCommandName() + " " + sB.toString()).strip();
- * 
- * //StringBuilder sB = new StringBuilder(); //if (getArguments() != null) { //
- * for (String i : getArguments().keySet()) { // if
- * (!getArguments().get(i).isDeveloper() // || (hasPermissionInfo &&
- * getArguments().get(i).isDeveloper())) { //
- * sB.append(getArguments().get(i).isRequired() ? "<" : "["); // if
- * (getArguments().get(i).isPrefixRequired()) { //
- * sB.append(Argument.argumentPrefix); // } // sB.append(i); // for (int j = 0;
- * j < getArguments().get(i).getAliases().size(); j++) { // sB.append((j <
- * getArguments().get(i).getAliases().size() ? " | " : "") // +
- * getArguments().get(i).getAliases().get(j)); // } //
- * sB.append(getArguments().get(i).isRequired() ? "> " : "] "); // } // } //} //
- * //return (Global.prefix + getCommandName() + " " + sB.toString()).strip();
- */

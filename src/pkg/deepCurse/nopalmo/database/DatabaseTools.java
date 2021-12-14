@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
+import pkg.deepCurse.nopalmo.utils.LogHelper;
 
 public class DatabaseTools {
 
@@ -44,11 +45,14 @@ public class DatabaseTools {
 	public static void checkUpdateCounts(String action, int[] updateCounts) {
 		for (int i = 0; i < updateCounts.length; i++) {
 			if (updateCounts[i] >= 0) {
-				System.out.println("Successfully executed; updateCount=" + updateCounts[i] + "; On action " + action);
+				LogHelper.log("Successfully executed; updateCount=" + updateCounts[i] + "; On action " + action,
+						DatabaseTools.class);
 			} else if (updateCounts[i] == Statement.SUCCESS_NO_INFO) {
-				System.out.println("Successfully executed; updateCount=Statement.SUCCESS_NO_INFO; On action " + action);
+				LogHelper.log("Successfully executed; updateCount=Statement.SUCCESS_NO_INFO; On action " + action,
+						DatabaseTools.class);
 			} else if (updateCounts[i] == Statement.EXECUTE_FAILED) {
-				System.out.println("Failed to execute; updateCount=Statement.EXECUTE_FAILED; On action " + action);
+				LogHelper.log("Failed to execute; updateCount=Statement.EXECUTE_FAILED; On action " + action,
+						DatabaseTools.class);
 			}
 		}
 	}
@@ -140,7 +144,7 @@ public class DatabaseTools {
 			}
 
 			public static void addUser(long idLong) {
-				
+
 			}
 
 		}
@@ -268,7 +272,7 @@ public class DatabaseTools {
 
 				} catch (SQLException e) {
 					SQLCode.getMessage(query, e.getErrorCode());
-					// System.out.println("eeeeee");
+					// LogHelper.log("eeeeee");
 					return false;
 				} finally {
 					try {
@@ -306,7 +310,7 @@ public class DatabaseTools {
 
 				} catch (SQLException e) {
 					SQLCode.getMessage(query, e.getErrorCode());
-					// System.out.println("eeeeee");
+					// LogHelper.log("eeeeee");
 					return null;
 				} finally {
 					try {
@@ -363,7 +367,7 @@ public class DatabaseTools {
 
 				} catch (SQLException e) {
 					SQLCode.getMessage(query, e.getErrorCode());
-					// System.out.println("eeeeee");
+					// LogHelper.log("eeeeee");
 					throw new SQLException(e);
 				} finally {
 					try {
@@ -400,7 +404,7 @@ public class DatabaseTools {
 
 				} catch (SQLException e) {
 					SQLCode.getMessage(query, e.getErrorCode());
-					// System.out.println("eeeeee");
+					// LogHelper.log("eeeeee");
 					return false;
 				} finally {
 					try {
@@ -437,7 +441,7 @@ public class DatabaseTools {
 
 				} catch (SQLException e) {
 					SQLCode.getMessage(query, e.getErrorCode());
-					// System.out.println("eeeeee");
+					// LogHelper.log("eeeeee");
 					return 45000;
 				} finally {
 					try {
@@ -474,7 +478,7 @@ public class DatabaseTools {
 
 				} catch (SQLException e) {
 					SQLCode.getMessage(query, e.getErrorCode());
-					// System.out.println("eeeeee");
+					// LogHelper.log("eeeeee");
 					return 0;
 				} finally {
 					try {
@@ -515,7 +519,7 @@ public class DatabaseTools {
 //
 //			} catch (SQLException e) {
 //				sqlTranslate(query, e.getErrorCode());
-//				// System.out.println("eeeeee");
+//				// LogHelper.log("eeeeee");
 //				return null;
 //			} finally {
 //				try {

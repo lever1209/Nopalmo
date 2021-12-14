@@ -18,32 +18,32 @@ public class Help implements GuildCommandInterface {
 
 	public final CommandManager manager;
 
+	public static final List<HelpPage> deniedPages = new ArrayList<HelpPage>();
+
 	public Help(CommandManager m) {
 		this.manager = m;
+		deniedPages.add(HelpPage.DEV);
+		deniedPages.add(HelpPage.EGG);
+		deniedPages.add(HelpPage.TESTING);
 	}
 
 	@Override
 	public void runGuildCommand(CommandBlob blob, HashMap<String, Argument> argumentMap) throws Exception {
 
-		boolean isDevEnabled = argumentMap.get("dev") != null;
-
-		final List<HelpPage> deniedPages = new ArrayList<HelpPage>();
-		deniedPages.add(HelpPage.DEV);
-		deniedPages.add(HelpPage.EGG);
-		deniedPages.add(HelpPage.TESTING);
+		// boolean blob.isDeveloper() = argumentMap.get("dev") != null;
 
 		if (argumentMap.get("commandName") == null) {
-			EmbedBuilder embed = new EmbedBuilder().setTitle(isDevEnabled ? "^Commands:" : "Commands:");
+			EmbedBuilder embed = new EmbedBuilder().setTitle(
+					blob.isDeveloper() ? "^Commands:" + blob.isDeveloper() : "Commands:" + blob.isDeveloper());
 
 			HashMap<HelpPage, ArrayList<String>> commandHash = new HashMap<HelpPage, ArrayList<String>>();
 
-			// TODO yet another rewrite
 			// TODO add command to log a string
 
 			for (HelpPage i : HelpPage.values()) {
 				ArrayList<String> commandNameList = commandHash.get(i);
 				for (CommandInterface command : manager.getCommands()) {
-					if (!(deniedPages.contains(i) && argumentMap.get("dev") == null)) {
+					if (!(deniedPages.contains(i) && !blob.isDeveloper())) {
 						if (command.getHelpPage() == i) {
 							if (commandNameList == null) {
 								commandNameList = new ArrayList<String>();
@@ -60,7 +60,7 @@ public class Help implements GuildCommandInterface {
 				}
 				commandNameList = null;
 			}
-			
+
 			// blob.getChannel().sendMessage(commandHash.toString()).queue();
 
 			for (HelpPage i : HelpPage.values()) {
@@ -110,17 +110,17 @@ public class Help implements GuildCommandInterface {
 
 			CommandInterface ping = blob.getCommandManager().getCommand("ping");
 			if (ping != null) {
-				sB.append("`" + ping.getUsage(isDevEnabled) + "`\n");
+				sB.append("`" + ping.getUsage(blob.isDeveloper()) + "`\n");
 			}
 
 			CommandInterface info = blob.getCommandManager().getCommand("info");
 			if (info != null) {
-				sB.append("`" + info.getUsage(isDevEnabled) + "`\n");
+				sB.append("`" + info.getUsage(blob.isDeveloper()) + "`\n");
 			}
 
 			CommandInterface prefix = blob.getCommandManager().getCommand("prefix");
 			if (prefix != null) {
-				sB.append("`" + prefix.getUsage(isDevEnabled) + "`\n");
+				sB.append("`" + prefix.getUsage(blob.isDeveloper()) + "`\n");
 			}
 
 			embed.addField("Information:", "Commands to take note of:\n" + sB, false);
@@ -136,7 +136,7 @@ public class Help implements GuildCommandInterface {
 
 			CommandInterface command = manager.getCommand(argumentMap.get("commandName").getWildCardString());
 
-			if (command != null && ((deniedPages.contains(command.getHelpPage()) && isDevEnabled)
+			if (command != null && ((deniedPages.contains(command.getHelpPage()) && blob.isDeveloper())
 					|| !deniedPages.contains(command.getHelpPage()))) {
 				if (!blob.isFromGuild() ? true : !(command.isNSFW() && !((TextChannel) blob.getChannel()).isNSFW())) {
 					EmbedBuilder eB = new EmbedBuilder();
@@ -151,7 +151,7 @@ public class Help implements GuildCommandInterface {
 						eB.addField("Help info:", "This command does not contain help information", false);
 					}
 
-					eB.addField("Usage:", "`" + command.getUsage(isDevEnabled) + "`", false);
+					eB.addField("Usage:", "`" + command.getUsage(blob.isDeveloper()) + "`", false);
 
 					eB.addField("Page:", command.getHelpPage().toString(), true); // ("Page: " +
 																					// command.getHelpPage().toString());
@@ -221,8 +221,8 @@ public class Help implements GuildCommandInterface {
 		HashMap<String, Argument> args = new HashMap<String, Argument>();
 
 		args.put("commandName", new Argument("commandName").setPosition(0).setIsWildcard(true));
-		args.put("dev", new Argument("dev").setPrefixRequirement(true).setPermissionLevel("infopermission")
-				.addAliases("d", "developer", "extra", "shit", "to", "test"));
+//		args.put("dev", new Argument("dev").setPrefixRequirement(true).setPermissionLevel("infopermission")
+//				.addAliases("d", "developer", "extra", "shit", "to", "test"));
 
 		return args;
 	}

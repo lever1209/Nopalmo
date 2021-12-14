@@ -10,14 +10,15 @@ import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.database.DatabaseTools;
 import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
 import pkg.deepCurse.nopalmo.global.Reactions;
+import pkg.deepCurse.nopalmo.utils.LogHelper;
 
 public class MessageReceivedListener extends ListenerAdapter {
 
 	@Override
 	public void onReady(@Nonnull ReadyEvent event) {
-		System.out.println("MessageReceivedListener is now ready\n" + event.getGuildAvailableCount() + "/"
+		LogHelper.log("MessageReceivedListener is now ready\n" + event.getGuildAvailableCount() + "/"
 				+ event.getGuildTotalCount() + " : " + event.getGuildUnavailableCount() + " <"
-				+ event.getResponseNumber() + ">");
+				+ event.getResponseNumber() + ">", getClass());
 	}
 
 	@Override
