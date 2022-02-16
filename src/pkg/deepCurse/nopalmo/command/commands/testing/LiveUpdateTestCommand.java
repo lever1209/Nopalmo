@@ -1,14 +1,14 @@
-package pkg.deepCurse.nopalmo.command.testing;
+package pkg.deepCurse.nopalmo.command.commands.testing;
 
 import java.io.File;
 import java.util.HashMap;
 
 import org.jetbrains.annotations.Nullable;
 
+import pkg.deepCurse.kyt.ClassManager;
+import pkg.deepCurse.kyt.ClassManager.InternalReloadable;
 import pkg.deepCurse.nopalmo.command.CommandInterface.DualCommandInterface;
 import pkg.deepCurse.nopalmo.manager.Argument;
-import pkg.deepCurse.nopalmo.manager.ClassManager;
-import pkg.deepCurse.nopalmo.manager.ClassManager.InternalReloadable;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import qj.util.ReflectUtil;
 

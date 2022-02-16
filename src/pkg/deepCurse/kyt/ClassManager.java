@@ -1,4 +1,4 @@
-package pkg.deepCurse.nopalmo.manager;
+package pkg.deepCurse.kyt;
 
 import java.io.File;
 import java.io.IOException;

@@ -143,13 +143,8 @@ public class Boot {
 
 			long now = System.currentTimeMillis();
 
-			if (now > lastTime + dynamicWait) { // dynamic wait loop
+			if (now > lastTime + dynamicWait) { // TODO revamp dynamic wait into individual tasks part of a runnable iterator based on time
 				lastTime = now;
-				try {
-					bot.getSelfUser();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
 			}
 
 			if (now > lastTimeCheckUpdate + 900000) {
