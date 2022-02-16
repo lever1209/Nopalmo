@@ -28,6 +28,7 @@ import pkg.deepCurse.nopalmo.command.commands.info.Ping;
 import pkg.deepCurse.nopalmo.command.commands.info.Reload;
 import pkg.deepCurse.nopalmo.command.commands.testing.GuildCommand;
 import pkg.deepCurse.nopalmo.command.commands.testing.PrivateCommand;
+import pkg.deepCurse.nopalmo.command.testing.LiveUpdateTestCommand;
 import pkg.deepCurse.nopalmo.core.Boot;
 import pkg.deepCurse.nopalmo.core.database.NopalmoDBTools.Tools.DeveloperDB;
 import pkg.deepCurse.nopalmo.core.database.NopalmoDBTools.Tools.GlobalDB;
@@ -60,6 +61,7 @@ public class CommandManager {
 		addCommand(new Reload()); // dual
 //		addCommand(new BontebokInterpret()); // dual
 		addCommand(new Stupid()); // guild
+		addCommand(new LiveUpdateTestCommand());
 	}
 
 	private void addCommand(CommandInterface c) {
@@ -156,9 +158,11 @@ public class CommandManager {
 							break;
 						}
 					}
-
+					
+					if (DeveloperDB.developerExists(commandBlob.getAuthorID())) {
 					commandBlob.setDeveloper(
 							DeveloperDB.getDeveloperBoolean(commandBlob.getAuthorID(), "developercommandpermission"));
+					}
 					for (int i = 0; i < newArgs.size(); i++) {
 						String x = newArgs.get(i);
 						x = x.toLowerCase();

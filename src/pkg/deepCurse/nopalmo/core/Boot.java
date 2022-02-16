@@ -77,7 +77,7 @@ public class Boot {
 				isProd = args[2].contentEquals("prod");
 
 				try {
-					logger.info("Connecting to mariadb:nopalmo");
+					logger.info("Connecting to mariadb:nopalmo"+args[1]);
 					NopalmoDBTools.init(isProd ? "nopalmo" : "chaos", "nopalmo", args[1]);
 				} catch (Exception e) {
 					e.printStackTrace();

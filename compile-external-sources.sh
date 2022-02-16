@@ -1,0 +1,1 @@
+javac $(find ./* | grep .java); echo Done!
