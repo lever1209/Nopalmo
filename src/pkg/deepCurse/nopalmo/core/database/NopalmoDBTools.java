@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Random;
+
 import org.fluentjdbc.DbContext;
 import org.fluentjdbc.DbContextConnection;
 import org.fluentjdbc.DbContextTable;
@@ -499,7 +500,8 @@ public class NopalmoDBTools {
 
 		public class InfractionDB {
 
-			public static long createInfraction(long userID, String reason, long expiryDate) {
+			public static long createInfraction(long userID, String reason, long expiryDate, long guildID,
+					long invokerID) {
 				try (DbContextConnection idk = context.startConnection(dataSource)) {
 					long time = System.currentTimeMillis();
 					infractions.insert().setPrimaryKey("userid", userID).setField("reason", reason)
@@ -519,7 +521,8 @@ public class NopalmoDBTools {
 			 * @param expiryDate
 			 * @param infractionID
 			 */
-			public static void createInfraction(long userID, String reason, long expiryDate, long infractionID) {
+			public static void createInfraction(long userID, String reason, long expiryDate, long guildID,
+					long invokerID, long infractionID) {
 				try (DbContextConnection idk = context.startConnection(dataSource)) {
 					infractions.insert().setPrimaryKey("infractionid", infractionID).setField("reason", reason)
 							.setField("epochdate", System.currentTimeMillis()).setField("expirydate", expiryDate)
@@ -666,7 +669,7 @@ public class NopalmoDBTools {
 //	public static void test(Runnable runnable) {
 
 		long userID = 99;
-		long guildID = 99;
+//		long guildID = 99;
 
 		Random random = new Random();
 		long minutes = 0;
@@ -701,7 +704,7 @@ public class NopalmoDBTools {
 	}
 
 	private class Tests {
-		
+
 		public static long infractionLoop(long time, long count, long userID, Random random) {
 
 			long userStartTime = System.currentTimeMillis();
@@ -723,7 +726,7 @@ public class NopalmoDBTools {
 				}
 
 				try {
-					InfractionDB.createInfraction(userID, String.valueOf(random.nextInt()), 0, i);
+					InfractionDB.createInfraction(userID, String.valueOf(random.nextInt()), 0, 0, 0, i);
 				} catch (Throwable e) {
 					eLL.add("onCreate");
 					eL.add(e);

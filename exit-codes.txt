@@ -1,4 +1,8 @@
-3 : Failed to lock
-4 : Failed to connect to maria
-7 : Shut down by developer
-8 : LoggerHelper.crash(Exception e);
+
+
+Failed to lock
+Failed to connect to maria
+
+
+Shut down by developer
+LoggerHelper.crash(Exception e);

@@ -2,6 +2,7 @@ package pkg.deepCurse.nopalmo.utils;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Scanner;
 
@@ -13,9 +14,10 @@ public class Locks {
 	 * 
 	 * @param lockName
 	 * @return true on exists, false on vacant
+	 * @throws IOException
 	 * @throws Exception
 	 */
-	public static boolean dirLock(String lockName) throws Exception {
+	public static boolean dirLock(String lockName) throws IOException {
 
 		long pid = 0L;
 

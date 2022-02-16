@@ -90,17 +90,17 @@ public class CommandManager {
 		final String pingPrefix = "<@!" + event.getJDA().getSelfUser().getIdLong() + ">";
 
 		String splicer = null;
-		
-        if (message.startsWith(pingPrefix + " ")) {
-            splicer = pingPrefix + " ";
-        } else if (message.startsWith(prefix)) {
-            splicer = prefix;
-        } else if (message.startsWith(pingPrefix)) {
-            splicer = pingPrefix;
-        } else {
-            return;
-        }
-		
+
+		if (message.startsWith(pingPrefix + " ")) {
+			splicer = pingPrefix + " ";
+		} else if (message.startsWith(prefix)) {
+			splicer = prefix;
+		} else if (message.startsWith(pingPrefix)) {
+			splicer = pingPrefix;
+		} else {
+			return;
+		}
+
 		final String[] split = message.replaceFirst("(?i)" + Pattern.quote(splicer), "").split("\\s+");
 		final String commandCall = split[0].toLowerCase();
 
@@ -158,10 +158,10 @@ public class CommandManager {
 							break;
 						}
 					}
-					
+
 					if (DeveloperDB.developerExists(commandBlob.getAuthorID())) {
-					commandBlob.setDeveloper(
-							DeveloperDB.getDeveloperBoolean(commandBlob.getAuthorID(), "developercommandpermission"));
+						commandBlob.setDeveloper(DeveloperDB.getDeveloperBoolean(commandBlob.getAuthorID(),
+								"developercommandpermission"));
 					}
 					for (int i = 0; i < newArgs.size(); i++) {
 						String x = newArgs.get(i);
@@ -182,7 +182,8 @@ public class CommandManager {
 												pre = arg.getArgName();
 											}
 										}
-									} // TODO RIP ROOT ALIAS PREFIX IN FAVOR OF "--long-name" "-s (shortname)" "wildcard"
+									} // TODO RIP ROOT ALIAS PREFIX IN FAVOR OF "--long-name" "-s (shortname)"
+										// "wildcard"
 
 									if (command.getArguments().keySet().contains(pre)) {
 
@@ -211,7 +212,7 @@ public class CommandManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 								} else {
-									
+
 									if (!command.getArguments().keySet().contains(x)) {
 										for (Argument arg : command.getArguments().values()) {
 											if (arg.getAliases().contains(x)) {
@@ -219,8 +220,9 @@ public class CommandManager {
 												x = arg.getArgName();
 											}
 										}
-									} // TODO RIP ROOT ALIAS PREFIX IN FAVOR OF "--long-name" "-s (shortname)" "wildcard"
-									
+									} // TODO RIP ROOT ALIAS PREFIX IN FAVOR OF "--long-name" "-s (shortname)"
+										// "wildcard"
+
 									if (command.getArguments().get(x) != null) {
 										if (command.getArguments().get(x).isPrefixRequired()) {
 											Tools.wrongUsage(event.getChannel(), command);
@@ -246,9 +248,9 @@ public class CommandManager {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 									} else {
-										
+
 										Argument posix = positionalArgs.get(i - offset);
-										
+
 //										if (!command.getArguments().keySet().contains(x)) {
 //											for (Argument arg : command.getArguments().values()) {
 //												if (arg.getAliases().contains(x)) {
@@ -257,23 +259,20 @@ public class CommandManager {
 //												}
 //											}
 //										} // TODO RIP ROOT ALIAS PREFIX IN FAVOR OF "--long-name" "-s (shortname)" "wildcard"
-										
+
 										if (posix != null) {
-											if (posix.getPermission() == null
-													|| DeveloperDB.hasPermission(commandBlob.getAuthorID(),
-															posix.getPermission())) {
+											if (posix.getPermission() == null || DeveloperDB
+													.hasPermission(commandBlob.getAuthorID(), posix.getPermission())) {
 												if (posix.isSkipOriginalTaskOnRunnable()) {
 													remainsValid = false;
 												}
 												if (posix.getIsWildcard()) {
-													argumentMap.put(posix.getArgName(),
-															posix.setWildCardString(x));
+													argumentMap.put(posix.getArgName(), posix.setWildCardString(x));
 												} else {
 													Tools.wrongUsage(event.getChannel(), command);
 													remainsValid = false;
 												}
-												if (posix.isAutoStartRunnable()
-														&& posix.getRunnableArg() != null) {
+												if (posix.isAutoStartRunnable() && posix.getRunnableArg() != null) {
 													posix.getRunnableArg().run(commandBlob);
 												}
 											} else {
