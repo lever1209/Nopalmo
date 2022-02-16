@@ -123,7 +123,7 @@ public class Boot {
 			public void run() {
 				loop();
 			}
-		});
+		}, "looping-thread");
 		loopingThread.start();
 		logger.info("Looping thread started. . .");
 	}
