@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.jetbrains.annotations.Nullable;
 
 import net.dv8tion.jda.api.Permission;
-import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
+import pkg.deepCurse.nopalmo.core.database.NopalmoDBTools.Tools.GlobalDB;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
 
@@ -61,10 +61,10 @@ public interface CommandInterface { // TODO rewrite to implement type args?
 					}
 				}
 			}
-			return Global.prefix + getCommandName() + " " + sB.toString().trim();
+			return GlobalDB.prefix + getCommandName() + " " + sB.toString().trim();
 		}
 
-		return Global.prefix + getCommandName();
+		return GlobalDB.prefix + getCommandName();
 	}
 
 	public default int getTimeout() {

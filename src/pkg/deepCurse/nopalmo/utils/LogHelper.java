@@ -9,20 +9,15 @@ package pkg.deepCurse.nopalmo.utils;
  */
 public class LogHelper {
 
-	public static int loggerLevel = 0;
-
-	public static boolean bootEnabled = true;
-	public static boolean guildCommandManagerEnabled = true;
-
-	public static void log(String text, Class<?> clazz) {
-		log(text, 0, clazz);
-	}
-
-	public static void log(String text, int level, Class<?> clazz) {
-		if (bootEnabled && level <= loggerLevel) {
-			System.out.println(clazz + ": " + text);
-		}
-	}
+//	public static void log(String text, Class<?> clazz) {
+//		log(text, 0, clazz);
+//	}
+//
+//	public static void log(String text, int level, Class<?> clazz) {
+//		if (bootEnabled && level <= loggerLevel) {
+//			System.out.println(clazz + ": " + text);
+//		}
+//	}
 
 	public static void crash(Exception e) {
 		e.printStackTrace();

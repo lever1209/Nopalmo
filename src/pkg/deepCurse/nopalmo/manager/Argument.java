@@ -106,11 +106,6 @@ public class Argument {
 //		return this;
 //	}
 
-	public Argument setPrefixRequirement(Boolean bool) {
-		this.requiresPrefix = bool;
-		return this;
-	}
-
 	public Argument setIsWildcard(Boolean bool) {
 
 		if (this.position <= -1) {
@@ -127,6 +122,11 @@ public class Argument {
 
 	public boolean isPrefixRequired() {
 		return this.requiresPrefix;
+	}
+
+	public Argument setPrefixRequirement(Boolean bool) {
+		this.requiresPrefix = bool;
+		return this;
 	}
 
 	public int getPosition() {

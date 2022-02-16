@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
 import pkg.deepCurse.nopalmo.command.CommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
-import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
+import pkg.deepCurse.nopalmo.core.database.NopalmoDBTools.Tools.GlobalDB;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
 import pkg.deepCurse.nopalmo.manager.CommandManager;
@@ -33,8 +33,7 @@ public class Help implements GuildCommandInterface {
 		// boolean blob.isDeveloper() = argumentMap.get("dev") != null;
 
 		if (argumentMap.get("commandName") == null) {
-			EmbedBuilder embed = new EmbedBuilder().setTitle(
-					blob.isDeveloper() ? "^Commands:" + blob.isDeveloper() : "Commands:" + blob.isDeveloper());
+			EmbedBuilder embed = new EmbedBuilder().setTitle(blob.isDeveloper() ? "^Commands:" : "Commands:");
 
 			HashMap<HelpPage, ArrayList<String>> commandHash = new HashMap<HelpPage, ArrayList<String>>();
 
@@ -127,7 +126,7 @@ public class Help implements GuildCommandInterface {
 
 			embed.setFooter(blob.getMember().getEffectiveName(), blob.getAuthor().getEffectiveAvatarUrl());
 			embed.setTimestamp(Instant.now());
-			embed.setColor(Global.getEmbedColor());
+			embed.setColor(Integer.parseInt(GlobalDB.getGlobalValue("embedcolor")));
 
 			blob.getChannel().sendMessageEmbeds(embed.build()).queue();
 
@@ -141,7 +140,7 @@ public class Help implements GuildCommandInterface {
 				if (!blob.isFromGuild() ? true : !(command.isNSFW() && !((TextChannel) blob.getChannel()).isNSFW())) {
 					EmbedBuilder eB = new EmbedBuilder();
 
-					eB.setColor(Global.getEmbedColor());
+					eB.setColor(Integer.parseInt(GlobalDB.getGlobalValue("embedcolor")));
 					StringBuilder sB = new StringBuilder();
 
 					eB.setTitle("Help results for: " + command.getCommandName());

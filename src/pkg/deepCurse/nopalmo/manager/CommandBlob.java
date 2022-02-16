@@ -28,6 +28,7 @@ public class CommandBlob {
 	private Guild guild = null;
 	private Member member = null;
 	private Message message = null;
+//	private BontebokInterpreter interpreter = null;
 
 	private boolean isDeveloper = false;
 	private boolean isWebhookMessage = false;
@@ -172,4 +173,13 @@ public class CommandBlob {
 	public void setDeveloper(boolean isDeveloper) {
 		this.isDeveloper = isDeveloper;
 	}
+
+//	public BontebokInterpreter getInterpreter() {
+//		return interpreter;
+//	}
+//
+//	public CommandBlob setInterpreter(BontebokInterpreter interpreter) {
+//		this.interpreter = interpreter;
+//		return this;
+//	}
 }

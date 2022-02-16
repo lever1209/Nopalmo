@@ -3,8 +3,10 @@ package pkg.deepCurse.nopalmo.core;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.impl.SimpleLoggerFactory;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -15,9 +17,8 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import pkg.deepCurse.nopalmo.database.DatabaseTools;
-import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Global;
-import pkg.deepCurse.nopalmo.global.Reactions;
+import pkg.deepCurse.nopalmo.core.database.NopalmoDBTools;
+import pkg.deepCurse.nopalmo.core.database.NopalmoDBTools.Tools.GlobalDB;
 import pkg.deepCurse.nopalmo.listener.MessageReceivedListener;
 import pkg.deepCurse.nopalmo.manager.CommandManager;
 import pkg.deepCurse.nopalmo.manager.StatusManager;
@@ -31,13 +32,13 @@ import pkg.deepCurse.phoenixRuntime.core.PhoenixSettings;
 public class Boot {
 
 	public static JDA bot; // TODO create sharding handler
-	public static DatabaseTools databaseTools = null;
+	private static Logger logger = new SimpleLoggerFactory().getLogger(Boot.class.getSimpleName());
+	public static final CommandManager commandManager = new CommandManager();
+//	public static BontebokManager bontebokManager = null;
 
 	public static boolean isProd = false;
-
 	public static final long pid = ProcessHandle.current().pid();
 	public static boolean running = true;
-	public static final CommandManager commandManager = new CommandManager();
 
 	public static void main(String[] args) {
 
@@ -48,11 +49,11 @@ public class Boot {
 		// proceed as a failure
 
 		settings.commandManager.addCommand("phoenix-update", (PhoenixRuntime runtime, List<String> commandArgs) -> {
-			LogHelper.log("Received <phoenix-update>", Boot.class);
+			logger.info("Received <phoenix-update>");
 
 			Socks.sendStringSock(settings.address, settings.commonPort, "phoenix-update-confirm");
 
-			LogHelper.log("Sent <phoenix-update-confirm>", Boot.class);
+			logger.info("Sent <phoenix-update-confirm>");
 
 			if (bot != null) {
 				bot.shutdown();
@@ -69,28 +70,21 @@ public class Boot {
 
 			@Override
 			public void boot() {
-				LogHelper.log("Booting: <" + pid + ">", Boot.class);
+				logger.info("Booting: <" + pid + ">");
 
 				long preBootTime = System.currentTimeMillis();
 
 				isProd = args[2].contentEquals("prod");
 
-				LogHelper.log("Connecting to mariadb:nopalmo", Boot.class);
 				try {
-					databaseTools = new DatabaseTools(args[1]);
-					LogHelper.log("Connected. . .", Boot.class);
-				} catch (SQLException | ClassNotFoundException e1) {
-					e1.printStackTrace();
-					LogHelper.log("Failed to connect\nShutting down. . .", Boot.class);
+					logger.info("Connecting to mariadb:nopalmo");
+					NopalmoDBTools.init(isProd ? "nopalmo" : "chaos", "nopalmo", args[1]);
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.info("Failed to connect\nShutting down. . .");
 					System.exit(4);
 				}
-
-				LogHelper.log("Init reaction/emote list", Boot.class);
-				Reactions.init();
-				LogHelper.log("Initialized reaction/emote list. . .", Boot.class);
-				LogHelper.log("Init commands list", Boot.class);
-				commandManager.init();
-				LogHelper.log("Initialized commands list. . .", Boot.class);
+				logger.info("Connected. . .");
 
 				try {
 //						bot = JDABuilder.createDefault(args[0]).setChunkingFilter(ChunkingFilter.ALL)
@@ -107,25 +101,16 @@ public class Boot {
 
 							.setChunkingFilter(ChunkingFilter.ALL).setMemberCachePolicy(MemberCachePolicy.ALL)
 
-							.enableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+							.enableIntents(GatewayIntent.DIRECT_MESSAGE_REACTIONS, GatewayIntent.DIRECT_MESSAGES,
+									GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_EMOJIS, GatewayIntent.GUILD_MEMBERS,
+									GatewayIntent.GUILD_MESSAGE_REACTIONS, GatewayIntent.GUILD_MESSAGES)
 
-									GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_BANS, GatewayIntent.GUILD_EMOJIS,
-									GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGE_REACTIONS,
-
-									GatewayIntent.GUILD_MESSAGES // , GatewayIntent.GUILD_VOICE_STATES
-					)
-
-							.enableCache(// CacheFlag.CLIENT_STATUS,
-									CacheFlag.EMOTE, // CacheFlag.ACTIVITY,
-									CacheFlag.MEMBER_OVERRIDES // , CacheFlag.VOICE_STATE
-					)
+							.enableCache(CacheFlag.EMOTE, CacheFlag.MEMBER_OVERRIDES)
 
 							// .setIdle(true)
 
 							.setAutoReconnect(true)
 
-//								.addEventListeners(new GuildMessageReceivedListener())
-//								.addEventListeners(new DirectMessageReceivedListener())
 							.addEventListeners(new MessageReceivedListener())
 
 							.setEnableShutdownHook(true)
@@ -136,20 +121,18 @@ public class Boot {
 					LogHelper.crash(e);
 				}
 
-				LogHelper.log("Using account: " + bot.getSelfUser().getName(), Boot.class);
+				Loader.init();
+
+				logger.info("Using account: " + bot.getSelfUser().getName());
 
 				bot.getPresence().setStatus(OnlineStatus.ONLINE);
 				bot.getPresence().setActivity(Activity.listening("Infected Mushroom"));
 
-				LogHelper.log("Init status list", Boot.class);
-				StatusManager.init();
-				LogHelper.log("Initialized status list. . .", Boot.class);
-
 				long bootTime = System.currentTimeMillis() - preBootTime;
 
-				LogHelper.log("Taken " + bootTime + "ms to boot", Boot.class);
+				logger.info("Taken " + bootTime + "ms to boot");
 
-				LogHelper.log("Starting loop", Boot.class);
+				logger.info("Starting loop");
 				loop();
 			}
 
@@ -162,7 +145,7 @@ public class Boot {
 				long lastTimeUpdateStatus = lastTime;
 				long lastTimeCheckUpdate = lastTime;
 
-				long dynamicWait = Global.getDynamicWait();
+				long dynamicWait = Long.parseLong(GlobalDB.getGlobalValue("dynamicwait"));
 
 				while (running) {
 
@@ -181,7 +164,8 @@ public class Boot {
 						lastTimeCheckUpdate = now;
 					}
 
-					if (now > lastTimeUpdateStatus + dynamicWait && Global.isShuffleStatusEnabled()) {
+					if (now > lastTimeUpdateStatus + dynamicWait
+							&& GlobalDB.getGlobalValue("isshufflestatusenabled").contentEquals("true")) {
 						lastTimeUpdateStatus = now;
 
 						StatusManager.shuffle(bot);
@@ -206,7 +190,7 @@ public class Boot {
 		});
 
 		runtime.setLockedRunnable(() -> {
-			LogHelper.log("System is locked\nSending <phoenix-update> instead. . . ", Boot.class);
+			logger.info("System is locked\nSending <phoenix-update> instead. . . ");
 
 			try {
 				Socket cSocket = new Socket("127.0.0.1", settings.commonPort);

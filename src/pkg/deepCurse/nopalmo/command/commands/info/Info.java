@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import pkg.deepCurse.nopalmo.command.CommandInterface.GuildCommandInterface;
 import pkg.deepCurse.nopalmo.command.CommandInterface.PrivateCommandInterface;
-import pkg.deepCurse.nopalmo.database.DatabaseTools.Tools.Users;
+import pkg.deepCurse.nopalmo.core.database.NopalmoDBTools.Tools.UserDB;
 import pkg.deepCurse.nopalmo.manager.Argument;
 import pkg.deepCurse.nopalmo.manager.CommandBlob;
 
@@ -32,8 +32,11 @@ public class Info implements GuildCommandInterface, PrivateCommandInterface {
 		HashMap<String, Argument> args = new HashMap<String, Argument>();
 
 		args.put("userdump", new Argument("userdump", (CommandBlob blob) -> {
-			blob.getChannel().sendMessage(!Users.dump(blob.getAuthorID()).isEmpty() ? Users.dump(blob.getAuthorID())
-					: "Sorry, but this user does not exist in the database").queue();
+			blob.getChannel()
+					.sendMessage(
+							!UserDB.generateDump(blob.getAuthorID()).isEmpty() ? UserDB.generateDump(blob.getAuthorID())
+									: "Sorry, but this user does not exist in the database")
+					.queue();
 		}).setPrefixRequirement(true).setAutoStartRunnable(true).setSkipOriginalTaskOnRunnable(true).addAliases("u"));
 
 		return args;

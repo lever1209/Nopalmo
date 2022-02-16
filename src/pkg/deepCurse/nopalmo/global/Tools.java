@@ -1,9 +1,13 @@
 package pkg.deepCurse.nopalmo.global;
 
+import java.util.Random;
+
 import net.dv8tion.jda.api.entities.MessageChannel;
 import pkg.deepCurse.nopalmo.command.CommandInterface;
 
 public class Tools {
+
+	public static Random random = new Random();
 
 	public static void wrongUsage(MessageChannel messageChannel, CommandInterface command) {
 		messageChannel.sendMessage("Wrong Command Usage!\n" + command.getUsage(false)).queue();
