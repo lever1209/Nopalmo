@@ -2,8 +2,8 @@
 finish loop
 // DONE add socket server for better management / integration
 // DONE implement pheonix in a smarter way than last time
-add better security to the socket server
-add argument alias usage support
+// REMOVED add better security to the socket server
+// DONE add argument alias usage support
 add on join actions and configs
 // DONE clean up database accessor for a more modular setup
 

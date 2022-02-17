@@ -39,7 +39,6 @@ public class LiveUpdateTestCommand implements InternalReloadable<String, String>
 		String string = (String) ReflectUtil.getField("string", manager.getClass("testing")).get(null);
 
 		blob.getChannel().sendMessage(string).queue();
-
 	}
 
 	@Override
